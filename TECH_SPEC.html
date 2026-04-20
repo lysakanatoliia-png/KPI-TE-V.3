@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8"/>
+<title>Tech Spec — KPI System V3 · Tiny Einstein</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: Inter, Arial, sans-serif; background: #f8fafc; color: #1e293b; padding: 48px 28px; max-width: 1020px; margin: 0 auto; line-height: 1.7; }
+
+.prd-header { background: #0f172a; border-radius: 16px; padding: 36px 40px; margin-bottom: 48px; }
+.prd-header h1 { font-size: 26px; font-weight: 800; color: #f8fafc; margin-bottom: 4px; }
+.prd-header .sub { font-size: 14px; color: #64748b; margin-bottom: 20px; }
+.meta-row { display: flex; gap: 24px; flex-wrap: wrap; }
+.meta-item .label { font-size: 11px; color: #475569; text-transform: uppercase; letter-spacing: .5px; font-weight: 700; display: block; }
+.meta-item .value { font-size: 13px; color: #94a3b8; }
+
+h2 { font-size: 18px; font-weight: 800; color: #0f172a; margin: 48px 0 16px; padding-bottom: 8px; border-bottom: 2px solid #e2e8f0; }
+h3 { font-size: 14px; font-weight: 700; color: #334155; margin: 24px 0 10px; }
+h4 { font-size: 12px; font-weight: 700; color: #64748b; margin: 16px 0 6px; text-transform: uppercase; letter-spacing: .5px; }
+
+p  { font-size: 14px; color: #475569; margin-bottom: 10px; }
+ul, ol { padding-left: 20px; margin-bottom: 12px; }
+li { font-size: 14px; color: #475569; margin-bottom: 4px; }
+li strong { color: #1e293b; }
+
+.info  { background: #eff6ff; border-left: 4px solid #3b82f6; border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 12px 0; font-size: 13px; color: #1e40af; }
+.warn  { background: #fff7ed; border-left: 4px solid #f97316; border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 12px 0; font-size: 13px; color: #7c2d12; }
+.good  { background: #f0fdf4; border-left: 4px solid #22c55e; border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 12px 0; font-size: 13px; color: #14532d; }
+.err   { background: #fef2f2; border-left: 4px solid #ef4444; border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 12px 0; font-size: 13px; color: #7f1d1d; }
+
+table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 12px 0 20px; }
+th { background: #1e293b; color: #e2e8f0; padding: 10px 14px; text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .5px; }
+td { padding: 10px 14px; border-bottom: 1px solid #e2e8f0; vertical-align: top; }
+tr:nth-child(even) td { background: #f8fafc; }
+
+.code { background: #0f172a; color: #e2e8f0; border-radius: 10px; padding: 18px 20px; font-family: 'Courier New', monospace; font-size: 12px; margin: 10px 0 18px; overflow-x: auto; white-space: pre; line-height: 1.7; }
+.kw  { color: #7dd3fc; }
+.str { color: #86efac; }
+.cm  { color: #475569; }
+.fn  { color: #fbbf24; }
+.num { color: #f9a8d4; }
+.var { color: #c4b5fd; }
+
+.toc { background: #fff; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 20px 24px; margin-bottom: 40px; }
+.toc-title { font-size: 12px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+.toc ul { list-style: none; padding: 0; columns: 2; }
+.toc li { font-size: 13px; color: #3b82f6; margin-bottom: 6px; }
+.toc li::before { content: "→ "; color: #94a3b8; }
+
+.divider { height: 2px; background: linear-gradient(to right, #0ea5e9, #8b5cf6); border-radius: 2px; margin: 44px 0; }
+
+.file-block { background: #fff; border: 1.5px solid #e2e8f0; border-radius: 10px; margin-bottom: 10px; overflow: hidden; }
+.file-title { background: #1e293b; color: #7dd3fc; font-family: 'Courier New', monospace; font-size: 13px; font-weight: 700; padding: 8px 16px; }
+.file-desc  { font-size: 13px; color: #475569; padding: 10px 16px; }
+
+.badge { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 6px; margin-right: 4px; }
+.b-php   { background: #dbeafe; color: #1e3a8a; }
+.b-sql   { background: #fef9c3; color: #713f12; }
+.b-js    { background: #fef3c7; color: #92400e; }
+.b-html  { background: #f3e8ff; color: #6b21a8; }
+.b-css   { background: #fce7f3; color: #831843; }
+.b-sec   { background: #fee2e2; color: #991b1b; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="prd-header">
+  <h1>KPI System V3 — Technical Specification</h1>
+  <p class="sub">Tiny Einstein · dev.tinyeinstein.org · Реалізація на основі PRD v1.0</p>
+  <div class="meta-row">
+    <div class="meta-item"><span class="label">Версія</span><span class="value">1.0</span></div>
+    <div class="meta-item"><span class="label">Дата</span><span class="value">20.04.2026</span></div>
+    <div class="meta-item"><span class="label">PHP</span><span class="value">8.2+</span></div>
+    <div class="meta-item"><span class="label">MySQL</span><span class="value">8.0+ / MariaDB 10.6+</span></div>
+    <div class="meta-item"><span class="label">Frontend</span><span class="value">Vanilla JS (ES2020), без фреймворків</span></div>
+    <div class="meta-item"><span class="label">Залежності</span><span class="value">Нуль — тільки PHP + PDO + MySQL</span></div>
+  </div>
+</div>
+
+<!-- TOC -->
+<div class="toc">
+  <div class="toc-title">Зміст</div>
+  <ul>
+    <li>1. Технологічний стек</li>
+    <li>2. Конфігурація та середовище</li>
+    <li>3. SQL — повні CREATE TABLE</li>
+    <li>4. api/db.php — підключення до БД</li>
+    <li>5. api/kpi.php — збереження KPI</li>
+    <li>6. api/reports.php — звіти</li>
+    <li>7. api/config.php — конфіги</li>
+    <li>8. form.html + form.js</li>
+    <li>9. dashboard.html + dashboard.js</li>
+    <li>10. Безпека</li>
+    <li>11. Обробка помилок</li>
+    <li>12. migrate/ — скрипти міграції</li>
+    <li>13. .htaccess</li>
+    <li>14. Чеклист деплою</li>
+  </ul>
+</div>
+
+
+<!-- 1. СТЕК -->
+<h2>1. Технологічний стек</h2>
+<table>
+  <thead><tr><th>Компонент</th><th>Технологія</th><th>Версія</th><th>Причина вибору</th></tr></thead>
+  <tbody>
+    <tr><td>Сервер</td><td>PHP</td><td>8.2+</td><td>Вже є на хостингу, PDO вбудований</td></tr>
+    <tr><td>База даних</td><td>MySQL / MariaDB</td><td>8.0+ / 10.6+</td><td>Вже є на хостингу, безкоштовно</td></tr>
+    <tr><td>DB драйвер</td><td>PDO (PHP Data Objects)</td><td>вбудований</td><td>Prepared statements, захист від SQL ін'єкцій</td></tr>
+    <tr><td>Frontend JS</td><td>Vanilla JS ES2020</td><td>—</td><td>Без залежностей, немає npm, легко деплоїти</td></tr>
+    <tr><td>Графіки</td><td>Chart.js</td><td>4.x CDN</td><td>Легкий, без build-кроку, підключається одним тегом</td></tr>
+    <tr><td>HTTP</td><td>fetch() API</td><td>вбудований браузер</td><td>Сучасний, без jQuery</td></tr>
+    <tr><td>Формат обміну</td><td>JSON</td><td>—</td><td>API повертає JSON, frontend парсить</td></tr>
+    <tr><td>Стилі</td><td>CSS3 (custom, без Bootstrap)</td><td>—</td><td>Легко, без залежностей</td></tr>
+  </tbody>
+</table>
+<div class="good">Нульова кількість npm-пакетів, composer-пакетів і зовнішніх залежностей. Деплой = завантажити файли по FTP.</div>
+
+
+<!-- 2. КОНФІГУРАЦІЯ -->
+<h2>2. Конфігурація та середовище</h2>
+
+<h3>api/config.env.php — секретний файл (не в git!)</h3>
+<div class="code">
+<span class="cm">&lt;?php</span>
+<span class="cm">// api/config.env.php — НЕ додавати в git, НЕ показувати публічно</span>
+<span class="kw">define</span>(<span class="str">'DB_HOST'</span>,     <span class="str">'localhost'</span>);
+<span class="kw">define</span>(<span class="str">'DB_NAME'</span>,     <span class="str">'te_kpi'</span>);
+<span class="kw">define</span>(<span class="str">'DB_USER'</span>,     <span class="str">'te_kpi_user'</span>);
+<span class="kw">define</span>(<span class="str">'DB_PASS'</span>,     <span class="str">'СЮДИ_ПАРОЛЬ'</span>);
+<span class="kw">define</span>(<span class="str">'DB_CHARSET'</span>,  <span class="str">'utf8mb4'</span>);
+<span class="kw">define</span>(<span class="str">'TZ'</span>,          <span class="str">'America/Los_Angeles'</span>);
+<span class="kw">define</span>(<span class="str">'APP_ENV'</span>,     <span class="str">'production'</span>); <span class="cm">// або 'development'</span>
+</div>
+
+<div class="warn">
+  <strong>Важливо:</strong> config.env.php містить пароль БД.
+  Додати в <code>.gitignore</code> якщо проект буде в git.
+  На хостингу файл захищений .htaccess (deny from all для *.php всередині api/ якщо прямий доступ).
+</div>
+
+<h3>Часовий пояс — встановлювати на старті кожного PHP-файлу</h3>
+<div class="code">
+<span class="cm">&lt;?php</span>
+<span class="kw">require_once</span> <span class="fn">__DIR__</span>.<span class="str">'/../api/config.env.php'</span>;
+<span class="fn">date_default_timezone_set</span>(<span class="var">TZ</span>); <span class="cm">// America/Los_Angeles</span>
+</div>
+
+
+<!-- 3. SQL -->
+<h2>3. SQL — повні CREATE TABLE скрипти</h2>
+<h4><span class="badge b-sql">SQL</span> install.sql — запустити один раз при деплої</h4>
+<div class="code">
+<span class="cm">-- ==============================================</span>
+<span class="cm">-- KPI V3 · Database Schema · install.sql</span>
+<span class="cm">-- Запустити через phpMyAdmin або mysql CLI</span>
+<span class="cm">-- ==============================================</span>
+
+<span class="kw">CREATE DATABASE IF NOT EXISTS</span> te_kpi
+  <span class="kw">CHARACTER SET</span> utf8mb4 <span class="kw">COLLATE</span> utf8mb4_unicode_ci;
+
+<span class="kw">USE</span> te_kpi;
+
+<span class="cm">-- ---- ROOMS ----</span>
+<span class="kw">CREATE TABLE IF NOT EXISTS</span> rooms (
+  room_code    <span class="fn">VARCHAR</span>(<span class="num">32</span>)  <span class="kw">NOT NULL PRIMARY KEY</span>,
+  room_name    <span class="fn">VARCHAR</span>(<span class="num">128</span>) <span class="kw">NOT NULL</span>,
+  is_admin     <span class="fn">TINYINT</span>(<span class="num">1</span>)  <span class="kw">NOT NULL DEFAULT</span> <span class="num">0</span>,
+  active       <span class="fn">TINYINT</span>(<span class="num">1</span>)  <span class="kw">NOT NULL DEFAULT</span> <span class="num">1</span>
+) <span class="kw">ENGINE</span>=InnoDB;
+
+<span class="cm">-- ---- SLOTS ----</span>
+<span class="kw">CREATE TABLE IF NOT EXISTS</span> slots (
+  slot_code    <span class="fn">VARCHAR</span>(<span class="num">32</span>)  <span class="kw">NOT NULL PRIMARY KEY</span>,
+  slot_label   <span class="fn">VARCHAR</span>(<span class="num">64</span>)  <span class="kw">NOT NULL</span>,
+  slot_short   <span class="fn">VARCHAR</span>(<span class="num">32</span>)  <span class="kw">DEFAULT NULL</span>,
+  sort_order   <span class="fn">INT</span>          <span class="kw">NOT NULL DEFAULT</span> <span class="num">0</span>,
+  active       <span class="fn">TINYINT</span>(<span class="num">1</span>)  <span class="kw">NOT NULL DEFAULT</span> <span class="num">1</span>
+) <span class="kw">ENGINE</span>=InnoDB;
+
+<span class="cm">-- ---- STAFF ----</span>
+<span class="kw">CREATE TABLE IF NOT EXISTS</span> staff (
+  staff_id     <span class="fn">VARCHAR</span>(<span class="num">64</span>)  <span class="kw">NOT NULL PRIMARY KEY</span>,
+  staff_name   <span class="fn">VARCHAR</span>(<span class="num">128</span>) <span class="kw">NOT NULL</span>,
+  role         <span class="fn">VARCHAR</span>(<span class="num">64</span>)  <span class="kw">DEFAULT NULL</span>,
+  rooms        <span class="fn">VARCHAR</span>(<span class="num">256</span>) <span class="kw">DEFAULT NULL</span>,  <span class="cm">-- "Pink,Green"</span>
+  active       <span class="fn">TINYINT</span>(<span class="num">1</span>)  <span class="kw">NOT NULL DEFAULT</span> <span class="num">1</span>
+) <span class="kw">ENGINE</span>=InnoDB;
+
+<span class="cm">-- ---- INDICATORS ----</span>
+<span class="kw">CREATE TABLE IF NOT EXISTS</span> indicators (
+  id           <span class="fn">INT</span>           <span class="kw">NOT NULL AUTO_INCREMENT PRIMARY KEY</span>,
+  room_code    <span class="fn">VARCHAR</span>(<span class="num">32</span>)  <span class="kw">NOT NULL DEFAULT</span> <span class="str">'*'</span>, <span class="cm">-- '*' = для всіх кімнат</span>
+  slot_code    <span class="fn">VARCHAR</span>(<span class="num">32</span>)  <span class="kw">NOT NULL DEFAULT</span> <span class="str">'*'</span>, <span class="cm">-- '*' = для всіх слотів</span>
+  scope        <span class="fn">ENUM</span>(<span class="str">'Team'</span>,<span class="str">'Individual'</span>) <span class="kw">NOT NULL DEFAULT</span> <span class="str">'Team'</span>,
+  category     <span class="fn">VARCHAR</span>(<span class="num">128</span>) <span class="kw">NOT NULL</span>,
+  indicator    <span class="fn">VARCHAR</span>(<span class="num">512</span>) <span class="kw">NOT NULL</span>,
+  weight       <span class="fn">DECIMAL</span>(<span class="num">5</span>,<span class="num">2</span>) <span class="kw">NOT NULL DEFAULT</span> <span class="num">1.00</span>,
+  sort_order   <span class="fn">INT</span>          <span class="kw">NOT NULL DEFAULT</span> <span class="num">0</span>,
+  active       <span class="fn">TINYINT</span>(<span class="num">1</span>)  <span class="kw">NOT NULL DEFAULT</span> <span class="num">1</span>
+) <span class="kw">ENGINE</span>=InnoDB;
+
+<span class="cm">-- ---- KPI ENTRIES (головна таблиця) ----</span>
+<span class="kw">CREATE TABLE IF NOT EXISTS</span> kpi_entries (
+  id             <span class="fn">INT</span>           <span class="kw">NOT NULL AUTO_INCREMENT PRIMARY KEY</span>,
+  batch_id       <span class="fn">VARCHAR</span>(<span class="num">64</span>)  <span class="kw">NOT NULL</span>,
+  entry_date     <span class="fn">DATE</span>          <span class="kw">NOT NULL</span>,
+  room_code      <span class="fn">VARCHAR</span>(<span class="num">32</span>)  <span class="kw">NOT NULL</span>,
+  slot_code      <span class="fn">VARCHAR</span>(<span class="num">32</span>)  <span class="kw">NOT NULL</span>,
+  staff_id       <span class="fn">VARCHAR</span>(<span class="num">64</span>)  <span class="kw">NOT NULL</span>,
+  scope          <span class="fn">ENUM</span>(<span class="str">'Team'</span>,<span class="str">'Individual'</span>) <span class="kw">NOT NULL</span>,
+  category       <span class="fn">VARCHAR</span>(<span class="num">128</span>) <span class="kw">NOT NULL</span>,
+  indicator      <span class="fn">VARCHAR</span>(<span class="num">512</span>) <span class="kw">NOT NULL</span>,
+  check_value    <span class="fn">TINYINT</span>(<span class="num">1</span>)  <span class="kw">NOT NULL DEFAULT</span> <span class="num">1</span>,  <span class="cm">-- 1=yes, 0=no</span>
+  weight         <span class="fn">DECIMAL</span>(<span class="num">5</span>,<span class="num">2</span>) <span class="kw">NOT NULL DEFAULT</span> <span class="num">1.00</span>,
+  earned_points  <span class="fn">DECIMAL</span>(<span class="num">8</span>,<span class="num">2</span>) <span class="kw">NOT NULL DEFAULT</span> <span class="num">0.00</span>,
+  possible_points <span class="fn">DECIMAL</span>(<span class="num">8</span>,<span class="num">2</span>) <span class="kw">NOT NULL DEFAULT</span> <span class="num">0.00</span>,
+  comment        <span class="fn">TEXT</span>          <span class="kw">DEFAULT NULL</span>,
+  submitted_by   <span class="fn">VARCHAR</span>(<span class="num">64</span>)  <span class="kw">DEFAULT NULL</span>,
+  present_staff  <span class="fn">VARCHAR</span>(<span class="num">512</span>) <span class="kw">DEFAULT NULL</span>,  <span class="cm">-- "st_tamar,st_alla" для team-рядків</span>
+  created_at     <span class="fn">DATETIME</span>     <span class="kw">NOT NULL DEFAULT</span> <span class="fn">NOW</span>(),
+
+  <span class="cm">-- Дедублікація: один запис = один batch + staff + indicator</span>
+  <span class="kw">UNIQUE KEY</span> uq_entry (batch_id, staff_id, indicator(<span class="num">200</span>)),
+
+  <span class="cm">-- Індекси для швидких запитів</span>
+  <span class="kw">KEY</span> idx_date        (entry_date),
+  <span class="kw">KEY</span> idx_room_date   (room_code, entry_date),
+  <span class="kw">KEY</span> idx_staff_date  (staff_id, entry_date),
+  <span class="kw">KEY</span> idx_batch       (batch_id),
+  <span class="kw">KEY</span> idx_violations  (check_value, entry_date)
+) <span class="kw">ENGINE</span>=InnoDB;
+</div>
+
+
+<!-- 4. DB.PHP -->
+<h2>4. api/db.php — підключення до бази даних</h2>
+<h4><span class="badge b-php">PHP</span> api/db.php</h4>
+<div class="code">
+<span class="kw">&lt;?php</span>
+<span class="kw">declare</span>(strict_types=<span class="num">1</span>);
+
+<span class="kw">require_once</span> <span class="fn">__DIR__</span>.<span class="str">'/config.env.php'</span>;
+<span class="fn">date_default_timezone_set</span>(<span class="var">TZ</span>);
+
+<span class="kw">function</span> <span class="fn">getDB</span>(): PDO {
+    <span class="kw">static</span> <span class="var">$pdo</span> = <span class="kw">null</span>;
+    <span class="kw">if</span> (<span class="var">$pdo</span> === <span class="kw">null</span>) {
+        <span class="var">$dsn</span> = <span class="str">"mysql:host="</span>.<span class="var">DB_HOST</span>.<span class="str">";dbname="</span>.<span class="var">DB_NAME</span>.<span class="str">";charset="</span>.<span class="var">DB_CHARSET</span>;
+        <span class="var">$pdo</span> = <span class="kw">new</span> <span class="fn">PDO</span>(<span class="var">$dsn</span>, <span class="var">DB_USER</span>, <span class="var">DB_PASS</span>, [
+            PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            PDO::ATTR_EMULATE_PREPARES   => <span class="kw">false</span>,
+        ]);
+    }
+    <span class="kw">return</span> <span class="var">$pdo</span>;
+}
+
+<span class="kw">function</span> <span class="fn">jsonOut</span>(array <span class="var">$data</span>, int <span class="var">$status</span> = <span class="num">200</span>): void {
+    <span class="fn">http_response_code</span>(<span class="var">$status</span>);
+    <span class="fn">header</span>(<span class="str">'Content-Type: application/json; charset=utf-8'</span>);
+    <span class="fn">header</span>(<span class="str">'Access-Control-Allow-Origin: *'</span>);
+    echo <span class="fn">json_encode</span>(<span class="var">$data</span>, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    exit;
+}
+
+<span class="kw">function</span> <span class="fn">jsonError</span>(string <span class="var">$msg</span>, int <span class="var">$status</span> = <span class="num">400</span>): void {
+    <span class="fn">jsonOut</span>([<span class="str">'ok'</span> => <span class="kw">false</span>, <span class="str">'error'</span> => <span class="var">$msg</span>], <span class="var">$status</span>);
+}
+
+<span class="kw">function</span> <span class="fn">getInput</span>(): array {
+    <span class="var">$raw</span> = <span class="fn">file_get_contents</span>(<span class="str">'php://input'</span>);
+    <span class="var">$data</span> = <span class="fn">json_decode</span>(<span class="var">$raw</span>, <span class="kw">true</span>);
+    <span class="kw">if</span> (!<span class="fn">is_array</span>(<span class="var">$data</span>)) <span class="fn">jsonError</span>(<span class="str">'Invalid JSON body'</span>);
+    <span class="kw">return</span> <span class="var">$data</span>;
+}
+
+<span class="kw">function</span> <span class="fn">generateBatchId</span>(): string {
+    <span class="kw">return</span> <span class="str">'B-'</span> . <span class="fn">round</span>(<span class="fn">microtime</span>(<span class="kw">true</span>) * <span class="num">1000</span>);
+}
+
+<span class="kw">function</span> <span class="fn">sanitizeDate</span>(string <span class="var">$d</span>): string {
+    <span class="cm">// Приймає MM-DD-YYYY або YYYY-MM-DD → повертає YYYY-MM-DD для MySQL</span>
+    <span class="kw">if</span> (<span class="fn">preg_match</span>(<span class="str">'/^(\d{2})-(\d{2})-(\d{4})$/'</span>, <span class="var">$d</span>, <span class="var">$m</span>)) {
+        <span class="kw">return</span> <span class="str">"{$m[3]}-{$m[1]}-{$m[2]}"</span>;
+    }
+    <span class="kw">if</span> (<span class="fn">preg_match</span>(<span class="str">'/^\d{4}-\d{2}-\d{2}$/'</span>, <span class="var">$d</span>)) <span class="kw">return</span> <span class="var">$d</span>;
+    <span class="fn">jsonError</span>(<span class="str">"Invalid date format: {$d}"</span>);
+}
+</div>
+
+
+<!-- 5. KPI.PHP -->
+<h2>5. api/kpi.php — збереження KPI</h2>
+<h4><span class="badge b-php">PHP</span> api/kpi.php</h4>
+<div class="code">
+<span class="kw">&lt;?php</span>
+<span class="kw">declare</span>(strict_types=<span class="num">1</span>);
+<span class="kw">require_once</span> <span class="fn">__DIR__</span>.<span class="str">'/db.php'</span>;
+
+<span class="var">$action</span> = <span class="var">$_GET</span>[<span class="str">'action'</span>] ?? <span class="str">''</span>;
+
+<span class="kw">match</span>(<span class="var">$action</span>) {
+    <span class="str">'saveTeam'</span>       => <span class="fn">saveTeam</span>(),
+    <span class="str">'saveIndividual'</span> => <span class="fn">saveIndividual</span>(),
+    <span class="str">'checkDuplicate'</span> => <span class="fn">checkDuplicate</span>(),
+    <span class="kw">default</span>          => <span class="fn">jsonError</span>(<span class="str">'Unknown action'</span>, <span class="num">404</span>)
+};
+
+<span class="cm">/* ====================================================
+   saveTeam — зберегти командні індикатори
+   Для кожного стафу з present_staff_ids → окремий рядок
+   ==================================================== */</span>
+<span class="kw">function</span> <span class="fn">saveTeam</span>(): void {
+    <span class="var">$in</span>      = <span class="fn">getInput</span>();
+    <span class="var">$db</span>      = <span class="fn">getDB</span>();
+    <span class="var">$batchId</span> = <span class="var">$in</span>[<span class="str">'batch_id'</span>]    ?? <span class="fn">jsonError</span>(<span class="str">'Missing batch_id'</span>);
+    <span class="var">$date</span>    = <span class="fn">sanitizeDate</span>(<span class="var">$in</span>[<span class="str">'date'</span>] ?? <span class="fn">jsonError</span>(<span class="str">'Missing date'</span>));
+    <span class="var">$room</span>    = <span class="fn">trim</span>(<span class="var">$in</span>[<span class="str">'room_code'</span>]    ?? <span class="fn">jsonError</span>(<span class="str">'Missing room_code'</span>));
+    <span class="var">$slot</span>    = <span class="fn">trim</span>(<span class="var">$in</span>[<span class="str">'slot_code'</span>]    ?? <span class="fn">jsonError</span>(<span class="str">'Missing slot_code'</span>));
+    <span class="var">$staffIds</span>= <span class="var">$in</span>[<span class="str">'present_staff_ids'</span>] ?? [];
+    <span class="var">$by</span>      = <span class="fn">trim</span>(<span class="var">$in</span>[<span class="str">'submitted_by'</span>] ?? <span class="str">'ui'</span>);
+    <span class="var">$items</span>   = <span class="var">$in</span>[<span class="str">'items'</span>]             ?? [];
+    <span class="var">$presentStr</span> = <span class="fn">implode</span>(<span class="str">','</span>, <span class="var">$staffIds</span>);
+
+    <span class="kw">if</span> (!<span class="var">$items</span> || !<span class="var">$staffIds</span>) <span class="fn">jsonError</span>(<span class="str">'Empty items or staff list'</span>);
+
+    <span class="cm">// Завантажити ваги індикаторів з БД</span>
+    <span class="var">$weights</span> = <span class="fn">loadIndicatorWeights</span>(<span class="var">$db</span>, <span class="var">$room</span>, <span class="var">$slot</span>, <span class="str">'Team'</span>);
+
+    <span class="var">$sql</span> = <span class="str">"INSERT IGNORE INTO kpi_entries
+            (batch_id, entry_date, room_code, slot_code, staff_id,
+             scope, category, indicator, check_value, weight,
+             earned_points, possible_points, comment, submitted_by, present_staff)
+            VALUES (?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?)"</span>;
+    <span class="var">$stmt</span> = <span class="var">$db</span>-><span class="fn">prepare</span>(<span class="var">$sql</span>);
+
+    <span class="var">$saved</span> = <span class="num">0</span>;
+    <span class="var">$db</span>-><span class="fn">beginTransaction</span>();
+    <span class="kw">try</span> {
+        <span class="kw">foreach</span> (<span class="var">$items</span> <span class="kw">as</span> <span class="var">$item</span>) {
+            <span class="var">$ind</span>     = <span class="fn">trim</span>(<span class="var">$item</span>[<span class="str">'indicator'</span>] ?? <span class="str">''</span>);
+            <span class="var">$cat</span>     = <span class="fn">trim</span>(<span class="var">$item</span>[<span class="str">'category'</span>]  ?? <span class="str">''</span>);
+            <span class="var">$check</span>   = (<span class="fn">strtolower</span>(<span class="var">$item</span>[<span class="str">'check'</span>] ?? <span class="str">'yes'</span>) === <span class="str">'yes'</span>) ? <span class="num">1</span> : <span class="num">0</span>;
+            <span class="var">$comment</span> = <span class="fn">trim</span>(<span class="var">$item</span>[<span class="str">'comment'</span>]  ?? <span class="str">''</span>) ?: <span class="kw">null</span>;
+            <span class="var">$w</span>       = <span class="var">$weights</span>[<span class="fn">strtolower</span>(<span class="var">$ind</span>)] ?? <span class="num">1.0</span>;
+            <span class="var">$earned</span>  = <span class="var">$check</span> ? <span class="var">$w</span> : <span class="num">0.0</span>;
+
+            <span class="kw">foreach</span> (<span class="var">$staffIds</span> <span class="kw">as</span> <span class="var">$staffId</span>) {
+                <span class="var">$stmt</span>-><span class="fn">execute</span>([
+                    <span class="var">$batchId</span>, <span class="var">$date</span>, <span class="var">$room</span>, <span class="var">$slot</span>, <span class="var">$staffId</span>,
+                    <span class="str">'Team'</span>, <span class="var">$cat</span>, <span class="var">$ind</span>, <span class="var">$check</span>, <span class="var">$w</span>,
+                    <span class="var">$earned</span>, <span class="var">$w</span>, <span class="var">$comment</span>, <span class="var">$by</span>, <span class="var">$presentStr</span>
+                ]);
+                <span class="var">$saved</span> += <span class="var">$stmt</span>-><span class="fn">rowCount</span>();
+            }
+        }
+        <span class="var">$db</span>-><span class="fn">commit</span>();
+    } <span class="kw">catch</span> (Throwable <span class="var">$e</span>) {
+        <span class="var">$db</span>-><span class="fn">rollBack</span>();
+        <span class="fn">jsonError</span>(<span class="str">'DB error: '</span> . <span class="var">$e</span>-><span class="fn">getMessage</span>(), <span class="num">500</span>);
+    }
+
+    <span class="fn">jsonOut</span>([<span class="str">'ok'</span> => <span class="kw">true</span>, <span class="str">'saved'</span> => <span class="var">$saved</span>]);
+}
+
+<span class="cm">/* ====================================================
+   saveIndividual — зберегти індивідуальні індикатори
+   ==================================================== */</span>
+<span class="kw">function</span> <span class="fn">saveIndividual</span>(): void {
+    <span class="var">$in</span>      = <span class="fn">getInput</span>();
+    <span class="var">$db</span>      = <span class="fn">getDB</span>();
+    <span class="var">$batchId</span> = <span class="var">$in</span>[<span class="str">'batch_id'</span>]  ?? <span class="fn">jsonError</span>(<span class="str">'Missing batch_id'</span>);
+    <span class="var">$date</span>    = <span class="fn">sanitizeDate</span>(<span class="var">$in</span>[<span class="str">'date'</span>] ?? <span class="fn">jsonError</span>(<span class="str">'Missing date'</span>));
+    <span class="var">$room</span>    = <span class="fn">trim</span>(<span class="var">$in</span>[<span class="str">'room_code'</span>]  ?? <span class="fn">jsonError</span>(<span class="str">'Missing room_code'</span>));
+    <span class="var">$slot</span>    = <span class="fn">trim</span>(<span class="var">$in</span>[<span class="str">'slot_code'</span>]  ?? <span class="fn">jsonError</span>(<span class="str">'Missing slot_code'</span>));
+    <span class="var">$staffId</span> = <span class="fn">trim</span>(<span class="var">$in</span>[<span class="str">'staff_id'</span>]   ?? <span class="fn">jsonError</span>(<span class="str">'Missing staff_id'</span>));
+    <span class="var">$by</span>      = <span class="fn">trim</span>(<span class="var">$in</span>[<span class="str">'submitted_by'</span>] ?? <span class="str">'ui'</span>);
+    <span class="var">$items</span>   = <span class="var">$in</span>[<span class="str">'items'</span>]           ?? [];
+
+    <span class="kw">if</span> (!<span class="var">$items</span>) <span class="fn">jsonError</span>(<span class="str">'Empty items'</span>);
+
+    <span class="var">$weights</span> = <span class="fn">loadIndicatorWeights</span>(<span class="var">$db</span>, <span class="var">$room</span>, <span class="var">$slot</span>, <span class="str">'Individual'</span>);
+
+    <span class="var">$sql</span> = <span class="str">"INSERT IGNORE INTO kpi_entries
+            (batch_id, entry_date, room_code, slot_code, staff_id,
+             scope, category, indicator, check_value, weight,
+             earned_points, possible_points, comment, submitted_by)
+            VALUES (?,?,?,?,?, ?,?,?,?,?, ?,?,?,?)"</span>;
+    <span class="var">$stmt</span> = <span class="var">$db</span>-><span class="fn">prepare</span>(<span class="var">$sql</span>);
+
+    <span class="var">$saved</span> = <span class="num">0</span>;
+    <span class="var">$db</span>-><span class="fn">beginTransaction</span>();
+    <span class="kw">try</span> {
+        <span class="kw">foreach</span> (<span class="var">$items</span> <span class="kw">as</span> <span class="var">$item</span>) {
+            <span class="var">$ind</span>     = <span class="fn">trim</span>(<span class="var">$item</span>[<span class="str">'indicator'</span>] ?? <span class="str">''</span>);
+            <span class="var">$cat</span>     = <span class="fn">trim</span>(<span class="var">$item</span>[<span class="str">'category'</span>]  ?? <span class="str">''</span>);
+            <span class="var">$check</span>   = (<span class="fn">strtolower</span>(<span class="var">$item</span>[<span class="str">'check'</span>] ?? <span class="str">'yes'</span>) === <span class="str">'yes'</span>) ? <span class="num">1</span> : <span class="num">0</span>;
+            <span class="var">$comment</span> = <span class="fn">trim</span>(<span class="var">$item</span>[<span class="str">'comment'</span>]  ?? <span class="str">''</span>) ?: <span class="kw">null</span>;
+            <span class="var">$w</span>       = <span class="var">$weights</span>[<span class="fn">strtolower</span>(<span class="var">$ind</span>)] ?? <span class="num">1.0</span>;
+            <span class="var">$earned</span>  = <span class="var">$check</span> ? <span class="var">$w</span> : <span class="num">0.0</span>;
+
+            <span class="var">$stmt</span>-><span class="fn">execute</span>([
+                <span class="var">$batchId</span>, <span class="var">$date</span>, <span class="var">$room</span>, <span class="var">$slot</span>, <span class="var">$staffId</span>,
+                <span class="str">'Individual'</span>, <span class="var">$cat</span>, <span class="var">$ind</span>, <span class="var">$check</span>, <span class="var">$w</span>,
+                <span class="var">$earned</span>, <span class="var">$w</span>, <span class="var">$comment</span>, <span class="var">$by</span>
+            ]);
+            <span class="var">$saved</span> += <span class="var">$stmt</span>-><span class="fn">rowCount</span>();
+        }
+        <span class="var">$db</span>-><span class="fn">commit</span>();
+    } <span class="kw">catch</span> (Throwable <span class="var">$e</span>) {
+        <span class="var">$db</span>-><span class="fn">rollBack</span>();
+        <span class="fn">jsonError</span>(<span class="str">'DB error: '</span> . <span class="var">$e</span>-><span class="fn">getMessage</span>(), <span class="num">500</span>);
+    }
+
+    <span class="fn">jsonOut</span>([<span class="str">'ok'</span> => <span class="kw">true</span>, <span class="str">'saved'</span> => <span class="var">$saved</span>]);
+}
+
+<span class="cm">/* ====================================================
+   checkDuplicate — перевірка перед збереженням
+   ==================================================== */</span>
+<span class="kw">function</span> <span class="fn">checkDuplicate</span>(): void {
+    <span class="var">$batchId</span>  = <span class="fn">trim</span>(<span class="var">$_GET</span>[<span class="str">'batch_id'</span>]  ?? <span class="str">''</span>);
+    <span class="var">$staffId</span>  = <span class="fn">trim</span>(<span class="var">$_GET</span>[<span class="str">'staff_id'</span>]  ?? <span class="str">''</span>);
+    <span class="var">$slotCode</span> = <span class="fn">trim</span>(<span class="var">$_GET</span>[<span class="str">'slot_code'</span>] ?? <span class="str">''</span>);
+    <span class="var">$scope</span>    = <span class="fn">trim</span>(<span class="var">$_GET</span>[<span class="str">'scope'</span>]     ?? <span class="str">''</span>);
+
+    <span class="var">$stmt</span> = <span class="fn">getDB</span>()-><span class="fn">prepare</span>(
+        <span class="str">"SELECT COUNT(*) FROM kpi_entries
+          WHERE batch_id=? AND staff_id=? AND slot_code=? AND scope=?"</span>
+    );
+    <span class="var">$stmt</span>-><span class="fn">execute</span>([<span class="var">$batchId</span>, <span class="var">$staffId</span>, <span class="var">$slotCode</span>, <span class="var">$scope</span>]);
+    <span class="var">$count</span> = (int) <span class="var">$stmt</span>-><span class="fn">fetchColumn</span>();
+
+    <span class="fn">jsonOut</span>([<span class="str">'exists'</span> => <span class="var">$count</span> > <span class="num">0</span>, <span class="str">'count'</span> => <span class="var">$count</span>]);
+}
+
+<span class="cm">/* ====================================================
+   Допоміжна: завантажити ваги індикаторів з БД
+   ==================================================== */</span>
+<span class="kw">function</span> <span class="fn">loadIndicatorWeights</span>(PDO <span class="var">$db</span>, string <span class="var">$room</span>, string <span class="var">$slot</span>, string <span class="var">$scope</span>): array {
+    <span class="var">$stmt</span> = <span class="var">$db</span>-><span class="fn">prepare</span>(
+        <span class="str">"SELECT LOWER(indicator) as ind, weight FROM indicators
+          WHERE (room_code=? OR room_code='*')
+            AND (slot_code=? OR slot_code='*')
+            AND scope=? AND active=1"</span>
+    );
+    <span class="var">$stmt</span>-><span class="fn">execute</span>([<span class="var">$room</span>, <span class="var">$slot</span>, <span class="var">$scope</span>]);
+    <span class="var">$map</span> = [];
+    <span class="kw">foreach</span> (<span class="var">$stmt</span>-><span class="fn">fetchAll</span>() <span class="kw">as</span> <span class="var">$r</span>) {
+        <span class="var">$map</span>[<span class="var">$r</span>[<span class="str">'ind'</span>]] = (float) <span class="var">$r</span>[<span class="str">'weight'</span>];
+    }
+    <span class="kw">return</span> <span class="var">$map</span>;
+}
+</div>
+
+
+<!-- 6. REPORTS.PHP -->
+<h2>6. api/reports.php — звіти і дашборд</h2>
+<h4><span class="badge b-php">PHP</span> api/reports.php — ключові SQL запити</h4>
+<div class="code">
+<span class="kw">&lt;?php</span>
+<span class="kw">declare</span>(strict_types=<span class="num">1</span>);
+<span class="kw">require_once</span> <span class="fn">__DIR__</span>.<span class="str">'/db.php'</span>;
+
+<span class="var">$action</span> = <span class="var">$_GET</span>[<span class="str">'action'</span>] ?? <span class="str">''</span>;
+<span class="kw">match</span>(<span class="var">$action</span>) {
+    <span class="str">'summary'</span>    => <span class="fn">summary</span>(),
+    <span class="str">'violations'</span> => <span class="fn">violations</span>(),
+    <span class="str">'daily'</span>      => <span class="fn">daily</span>(),
+    <span class="str">'monthly'</span>    => <span class="fn">monthly</span>(),
+    <span class="kw">default</span>      => <span class="fn">jsonError</span>(<span class="str">'Unknown action'</span>, <span class="num">404</span>)
+};
+
+<span class="kw">function</span> <span class="fn">summary</span>(): void {
+    <span class="var">$from</span> = <span class="var">$_GET</span>[<span class="str">'from'</span>] ?? <span class="fn">date</span>(<span class="str">'Y-m-01'</span>);
+    <span class="var">$to</span>   = <span class="var">$_GET</span>[<span class="str">'to'</span>]   ?? <span class="fn">date</span>(<span class="str">'Y-m-d'</span>);
+    <span class="var">$room</span> = <span class="var">$_GET</span>[<span class="str">'room'</span>] ?? <span class="kw">null</span>;
+
+    <span class="var">$where</span> = <span class="str">"entry_date BETWEEN :from AND :to"</span>;
+    <span class="var">$params</span> = [<span class="str">'from'</span> => <span class="var">$from</span>, <span class="str">'to'</span> => <span class="var">$to</span>];
+    <span class="kw">if</span> (<span class="var">$room</span>) { <span class="var">$where</span> .= <span class="str">" AND room_code = :room"</span>; <span class="var">$params</span>[<span class="str">'room'</span>] = <span class="var">$room</span>; }
+
+    <span class="var">$sql</span> = <span class="str">"
+        SELECT
+            e.staff_id,
+            s.staff_name,
+            e.room_code,
+            ROUND(
+                SUM(CASE WHEN scope='Team' THEN earned_points ELSE 0 END) /
+                NULLIF(SUM(CASE WHEN scope='Team' THEN possible_points ELSE 0 END),0)
+                * 100, 2
+            ) AS team_kpi,
+            ROUND(
+                SUM(CASE WHEN scope='Individual' THEN earned_points ELSE 0 END) /
+                NULLIF(SUM(CASE WHEN scope='Individual' THEN possible_points ELSE 0 END),0)
+                * 100, 2
+            ) AS ind_kpi,
+            SUM(CASE WHEN scope='Team' THEN possible_points ELSE 0 END)       AS team_possible,
+            SUM(CASE WHEN scope='Individual' THEN possible_points ELSE 0 END) AS ind_possible,
+            r.is_admin
+        FROM kpi_entries e
+        LEFT JOIN staff  s ON s.staff_id  = e.staff_id
+        LEFT JOIN rooms  r ON r.room_code = e.room_code
+        WHERE $where AND e.staff_id != 'TEAM'
+        GROUP BY e.staff_id, e.room_code
+        ORDER BY e.room_code, team_kpi DESC"</span>;
+
+    <span class="var">$stmt</span> = <span class="fn">getDB</span>()-><span class="fn">prepare</span>(<span class="var">$sql</span>);
+    <span class="var">$stmt</span>-><span class="fn">execute</span>(<span class="var">$params</span>);
+    <span class="var">$rows</span> = <span class="var">$stmt</span>-><span class="fn">fetchAll</span>();
+
+    <span class="cm">// Рахуємо TotalKPI% в PHP (складна умова Admin + IndPossible=0)</span>
+    <span class="kw">foreach</span> (<span class="var">$rows</span> <span class="kw">as</span> &<span class="var">$r</span>) {
+        <span class="var">$team</span> = (float)(<span class="var">$r</span>[<span class="str">'team_kpi'</span>] ?? <span class="num">0</span>);
+        <span class="var">$ind</span>  = (float)(<span class="var">$r</span>[<span class="str">'ind_kpi'</span>]  ?? <span class="num">0</span>);
+        <span class="var">$indP</span> = (float)(<span class="var">$r</span>[<span class="str">'ind_possible'</span>] ?? <span class="num">0</span>);
+
+        <span class="kw">if</span> (<span class="var">$r</span>[<span class="str">'is_admin'</span>] || <span class="var">$indP</span> == <span class="num">0</span>) {
+            <span class="var">$r</span>[<span class="str">'total_kpi'</span>] = <span class="fn">round</span>(<span class="var">$team</span>, <span class="num">2</span>);
+        } <span class="kw">else</span> {
+            <span class="var">$r</span>[<span class="str">'total_kpi'</span>] = <span class="fn">round</span>(<span class="var">$team</span> * <span class="num">0.8</span> + <span class="var">$ind</span> * <span class="num">0.2</span>, <span class="num">2</span>);
+        }
+    }
+
+    <span class="fn">jsonOut</span>([<span class="str">'ok'</span> => <span class="kw">true</span>, <span class="str">'data'</span> => <span class="var">$rows</span>]);
+}
+
+<span class="kw">function</span> <span class="fn">violations</span>(): void {
+    <span class="var">$from</span> = <span class="var">$_GET</span>[<span class="str">'from'</span>] ?? <span class="fn">date</span>(<span class="str">'Y-m-01'</span>);
+    <span class="var">$to</span>   = <span class="var">$_GET</span>[<span class="str">'to'</span>]   ?? <span class="fn">date</span>(<span class="str">'Y-m-d'</span>);
+    <span class="var">$room</span> = <span class="var">$_GET</span>[<span class="str">'room'</span>] ?? <span class="kw">null</span>;
+    <span class="var">$limit</span> = <span class="fn">min</span>((int)(<span class="var">$_GET</span>[<span class="str">'limit'</span>] ?? <span class="num">20</span>), <span class="num">100</span>);
+
+    <span class="var">$where</span> = <span class="str">"check_value=0 AND entry_date BETWEEN :from AND :to"</span>;
+    <span class="var">$params</span> = [<span class="str">'from'</span>=><span class="var">$from</span>, <span class="str">'to'</span>=><span class="var">$to</span>];
+    <span class="kw">if</span>(<span class="var">$room</span>){ <span class="var">$where</span>.=<span class="str">" AND room_code=:room"</span>; <span class="var">$params</span>[<span class="str">'room'</span>]=<span class="var">$room</span>; }
+
+    <span class="var">$stmt</span> = <span class="fn">getDB</span>()-><span class="fn">prepare</span>(<span class="str">"
+        SELECT room_code, category, indicator,
+               COUNT(*) AS violations,
+               COUNT(DISTINCT entry_date) AS days_violated,
+               COUNT(DISTINCT staff_id)   AS staff_affected
+        FROM kpi_entries
+        WHERE $where AND staff_id != 'TEAM'
+        GROUP BY room_code, category, indicator
+        ORDER BY violations DESC
+        LIMIT :lim"</span>);
+    <span class="var">$params</span>[<span class="str">'lim'</span>] = <span class="var">$limit</span>;
+    <span class="var">$stmt</span>-><span class="fn">execute</span>(<span class="var">$params</span>);
+    <span class="fn">jsonOut</span>([<span class="str">'ok'</span>=><span class="kw">true</span>, <span class="str">'data'</span>=><span class="var">$stmt</span>-><span class="fn">fetchAll</span>()]);
+}
+</div>
+
+
+<!-- 7. CONFIG.PHP -->
+<h2>7. api/config.php — конфігурація системи</h2>
+<div class="code">
+<span class="kw">&lt;?php</span>
+<span class="kw">declare</span>(strict_types=<span class="num">1</span>);
+<span class="kw">require_once</span> <span class="fn">__DIR__</span>.<span class="str">'/db.php'</span>;
+
+<span class="cm">// GET /api/config.php — повернути всі конфіги для UI</span>
+<span class="kw">if</span> (<span class="var">$_SERVER</span>[<span class="str">'REQUEST_METHOD'</span>] === <span class="str">'GET'</span>) {
+    <span class="var">$db</span> = <span class="fn">getDB</span>();
+    <span class="fn">jsonOut</span>([
+        <span class="str">'ok'</span>         => <span class="kw">true</span>,
+        <span class="str">'rooms'</span>      => <span class="var">$db</span>-><span class="fn">query</span>(<span class="str">"SELECT * FROM rooms      WHERE active=1 ORDER BY room_code"</span>)-><span class="fn">fetchAll</span>(),
+        <span class="str">'slots'</span>      => <span class="var">$db</span>-><span class="fn">query</span>(<span class="str">"SELECT * FROM slots      WHERE active=1 ORDER BY sort_order"</span>)-><span class="fn">fetchAll</span>(),
+        <span class="str">'staff'</span>      => <span class="var">$db</span>-><span class="fn">query</span>(<span class="str">"SELECT * FROM staff      WHERE active=1 ORDER BY staff_name"</span>)-><span class="fn">fetchAll</span>(),
+        <span class="str">'indicators'</span> => <span class="var">$db</span>-><span class="fn">query</span>(<span class="str">"SELECT * FROM indicators WHERE active=1 ORDER BY room_code, slot_code, sort_order"</span>)-><span class="fn">fetchAll</span>(),
+    ]);
+}
+</div>
+
+
+<!-- 8. FORM.JS -->
+<h2>8. form.html + form.js</h2>
+<h4><span class="badge b-js">JS</span> assets/form.js — логіка форми</h4>
+<div class="code">
+<span class="cm">// =====================================================
+// Стан форми
+// =====================================================</span>
+<span class="kw">const</span> state = {
+  config:     <span class="kw">null</span>,      <span class="cm">// завантажується з /api/config.php</span>
+  batchId:    <span class="kw">null</span>,      <span class="cm">// генерується при відкритті сторінки</span>
+  date:       <span class="kw">null</span>,
+  room:       <span class="kw">null</span>,
+  slot:       <span class="kw">null</span>,
+  staffIds:   [],
+  teamItems:  [],        <span class="cm">// { indicator, category, check, comment }</span>
+  indItems:   {}         <span class="cm">// { staffId: [items] }</span>
+};
+
+<span class="cm">// =====================================================
+// Завантаження конфігу при старті
+// =====================================================</span>
+<span class="kw">async function</span> <span class="fn">loadConfig</span>() {
+  <span class="kw">const</span> res  = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">'/kpi/api/config.php'</span>);
+  <span class="kw">const</span> data = <span class="kw">await</span> res.<span class="fn">json</span>();
+  state.config = data;
+  <span class="fn">renderRooms</span>(data.rooms);
+  <span class="fn">renderSlots</span>(data.slots);
+}
+
+<span class="cm">// =====================================================
+// Збереження — головна функція
+// =====================================================</span>
+<span class="kw">async function</span> <span class="fn">save</span>() {
+  <span class="kw">const</span> btn = <span class="fn">document</span>.<span class="fn">getElementById</span>(<span class="str">'btn-save'</span>);
+  btn.disabled = <span class="kw">true</span>;
+  btn.textContent = <span class="str">'Saving...'</span>;
+
+  <span class="kw">try</span> {
+    <span class="cm">// 1. Перевірка дублікату</span>
+    <span class="kw">const</span> dupUrl = <span class="str">`/kpi/api/kpi.php?action=checkDuplicate`</span>
+        + <span class="str">`&batch_id=${state.batchId}&staff_id=TEAM`</span>
+        + <span class="str">`&slot_code=${state.slot}&scope=Team`</span>;
+    <span class="kw">const</span> dup = <span class="kw">await</span> (<span class="kw">await</span> <span class="fn">fetch</span>(dupUrl)).<span class="fn">json</span>();
+
+    <span class="kw">if</span> (dup.exists) {
+      <span class="fn">showError</span>(<span class="str">'Цей слот вже збережено! Відкрийте нову форму.'</span>);
+      <span class="kw">return</span>;
+    }
+
+    <span class="cm">// 2. Зберегти Team KPI</span>
+    <span class="kw">const</span> teamRes = <span class="kw">await</span> <span class="fn">post</span>(<span class="str">'/kpi/api/kpi.php?action=saveTeam'</span>, {
+      batch_id:          state.batchId,
+      date:              state.date,
+      room_code:         state.room,
+      slot_code:         state.slot,
+      present_staff_ids: state.staffIds,
+      submitted_by:      <span class="str">'manager'</span>,
+      items:             state.teamItems
+    });
+    <span class="kw">if</span> (!teamRes.ok) <span class="kw">throw new</span> <span class="fn">Error</span>(teamRes.error);
+
+    <span class="cm">// 3. Зберегти Individual KPI по кожному стафу</span>
+    <span class="kw">for</span> (<span class="kw">const</span> staffId <span class="kw">of</span> state.staffIds) {
+      <span class="kw">const</span> items = state.indItems[staffId] ?? [];
+      <span class="kw">if</span> (!items.length) <span class="kw">continue</span>;
+
+      <span class="kw">const</span> indRes = <span class="kw">await</span> <span class="fn">post</span>(<span class="str">'/kpi/api/kpi.php?action=saveIndividual'</span>, {
+        batch_id:     state.batchId,
+        date:         state.date,
+        room_code:    state.room,
+        slot_code:    state.slot,
+        staff_id:     staffId,
+        submitted_by: <span class="str">'manager'</span>,
+        items:        items
+      });
+      <span class="kw">if</span> (!indRes.ok) <span class="kw">throw new</span> <span class="fn">Error</span>(indRes.error);
+    }
+
+    <span class="cm">// 4. Успіх</span>
+    <span class="fn">showSuccess</span>(<span class="str">'✓ KPI saved successfully'</span>);
+    btn.textContent = <span class="str">'Saved ✓'</span>;
+
+  } <span class="kw">catch</span> (err) {
+    <span class="fn">showError</span>(<span class="str">'Error: '</span> + err.message);
+    btn.disabled = <span class="kw">false</span>;
+    btn.textContent = <span class="str">'Save KPI'</span>;
+  }
+}
+
+<span class="kw">async function</span> <span class="fn">post</span>(url, data) {
+  <span class="kw">const</span> res = <span class="kw">await</span> <span class="fn">fetch</span>(url, {
+    method:  <span class="str">'POST'</span>,
+    headers: { <span class="str">'Content-Type'</span>: <span class="str">'application/json'</span> },
+    body:    <span class="fn">JSON</span>.<span class="fn">stringify</span>(data)
+  });
+  <span class="kw">return</span> res.<span class="fn">json</span>();
+}
+</div>
+
+
+<!-- 9. DASHBOARD -->
+<h2>9. dashboard.html + dashboard.js</h2>
+<h4><span class="badge b-js">JS</span> assets/dashboard.js — ключові функції</h4>
+<div class="code">
+<span class="cm">// Завантажити і відобразити KPI Summary</span>
+<span class="kw">async function</span> <span class="fn">loadSummary</span>() {
+  <span class="kw">const</span> from  = <span class="fn">document</span>.<span class="fn">getElementById</span>(<span class="str">'filter-from'</span>).value;
+  <span class="kw">const</span> to    = <span class="fn">document</span>.<span class="fn">getElementById</span>(<span class="str">'filter-to'</span>).value;
+  <span class="kw">const</span> room  = <span class="fn">document</span>.<span class="fn">getElementById</span>(<span class="str">'filter-room'</span>).value;
+
+  <span class="kw">const</span> url   = <span class="str">`/kpi/api/reports.php?action=summary&from=${from}&to=${to}&room=${room}`</span>;
+  <span class="kw">const</span> data  = <span class="kw">await</span> (<span class="kw">await</span> <span class="fn">fetch</span>(url)).<span class="fn">json</span>();
+
+  <span class="kw">const</span> tbody = <span class="fn">document</span>.<span class="fn">querySelector</span>(<span class="str">'#summary-table tbody'</span>);
+  tbody.innerHTML = data.data.<span class="fn">map</span>(r => <span class="str">`
+    &lt;tr&gt;
+      &lt;td&gt;${r.staff_name}&lt;/td&gt;
+      &lt;td&gt;${r.room_code}&lt;/td&gt;
+      &lt;td&gt;${r.team_kpi ?? '—'}%&lt;/td&gt;
+      &lt;td&gt;${r.ind_kpi  ?? '—'}%&lt;/td&gt;
+      &lt;td class="${kpiClass(r.total_kpi)}"&gt;&lt;strong&gt;${r.total_kpi}%&lt;/strong&gt;&lt;/td&gt;
+    &lt;/tr&gt;`</span>).<span class="fn">join</span>(<span class="str">''</span>);
+}
+
+<span class="cm">// Колір по % KPI</span>
+<span class="kw">function</span> <span class="fn">kpiClass</span>(pct) {
+  <span class="kw">if</span> (pct >= <span class="num">90</span>) <span class="kw">return</span> <span class="str">'kpi-green'</span>;
+  <span class="kw">if</span> (pct >= <span class="num">75</span>) <span class="kw">return</span> <span class="str">'kpi-yellow'</span>;
+  <span class="kw">return</span> <span class="str">'kpi-red'</span>;
+}
+</div>
+
+
+<!-- 10. БЕЗПЕКА -->
+<h2>10. Безпека</h2>
+<h4><span class="badge b-sec">SECURITY</span> Захист від типових атак</h4>
+<table>
+  <thead><tr><th>Загроза</th><th>Захист</th><th>Де реалізовано</th></tr></thead>
+  <tbody>
+    <tr><td>SQL ін'єкція</td><td>PDO Prepared Statements — <strong>всі</strong> параметри через <code>?</code> або <code>:name</code></td><td>Всі PHP файли</td></tr>
+    <tr><td>XSS (Cross-Site Scripting)</td><td><code>htmlspecialchars()</code> при виводі в HTML, JSON-відповідь не містить HTML</td><td>dashboard.js — при вставці в DOM</td></tr>
+    <tr><td>Пряме відкриття PHP файлів</td><td>.htaccess забороняє прямий доступ до <code>api/*.php</code></td><td>.htaccess</td></tr>
+    <tr><td>Відкрита БД-конфігурація</td><td>config.env.php не в публічній папці або захищений .htaccess</td><td>.htaccess + config.env.php</td></tr>
+    <tr><td>Масові запити / флад</td><td>UNIQUE KEY в MySQL — INSERT IGNORE не дублює, навіть при масових запитах</td><td>install.sql</td></tr>
+    <tr><td>Великий payload</td><td>PHP обмежує розмір POST (post_max_size). Додатково: перевіряти кількість items ≤ 50</td><td>api/kpi.php</td></tr>
+  </tbody>
+</table>
+
+<div class="warn">
+  <strong>HTTP Basic Auth (рекомендовано для V3.1):</strong>
+  Додати в .htaccess для захисту всієї папки /kpi/ від неавторизованого доступу.
+  В V3.0 можна без авторизації якщо хостинг доступний тільки з корпоративного IP.
+</div>
+
+
+<!-- 11. ОБРОБКА ПОМИЛОК -->
+<h2>11. Обробка помилок</h2>
+<h3>Стратегія на рівні PHP</h3>
+<div class="code">
+<span class="cm">// Всі API файли: ловити всі винятки на верхньому рівні</span>
+<span class="fn">set_exception_handler</span>(<span class="kw">function</span>(Throwable <span class="var">$e</span>): void {
+    <span class="fn">http_response_code</span>(<span class="num">500</span>);
+    <span class="fn">header</span>(<span class="str">'Content-Type: application/json'</span>);
+    <span class="var">$msg</span> = (<span class="var">APP_ENV</span> === <span class="str">'development'</span>)
+        ? <span class="var">$e</span>-><span class="fn">getMessage</span>()
+        : <span class="str">'Internal server error'</span>; <span class="cm">// в продакшн не показуємо деталі!</span>
+    echo <span class="fn">json_encode</span>([<span class="str">'ok'</span> => <span class="kw">false</span>, <span class="str">'error'</span> => <span class="var">$msg</span>]);
+});
+</div>
+
+<h3>Стратегія на рівні JS (frontend)</h3>
+<table>
+  <thead><tr><th>Ситуація</th><th>Поведінка UI</th></tr></thead>
+  <tbody>
+    <tr><td>fetch() кидає Network Error</td><td>Показати червоний банер "No connection. Please try again."</td></tr>
+    <tr><td>API повернув ok: false</td><td>Показати текст помилки з поля error</td></tr>
+    <tr><td>Дублікат при збереженні</td><td>Попередження жовтим "Already saved. Open a new form."</td></tr>
+    <tr><td>Порожній список стафу</td><td>Заблокувати кнопку Save, показати "Select at least one staff"</td></tr>
+    <tr><td>Успішне збереження</td><td>Зелений банер, кнопка Save стає disabled і змінює текст на "Saved ✓"</td></tr>
+  </tbody>
+</table>
+
+
+<!-- 12. МІГРАЦІЯ -->
+<h2>12. migrate/ — скрипти міграції даних</h2>
+<h4><span class="badge b-php">PHP</span> migrate/migrate_v2.php — kpi_history.json → MySQL</h4>
+<div class="code">
+<span class="kw">&lt;?php</span>
+<span class="kw">require_once</span> <span class="fn">__DIR__</span>.<span class="str">'/../api/db.php'</span>;
+
+<span class="var">$historyFile</span> = <span class="fn">__DIR__</span>.<span class="str">'/../kpi_history.json'</span>;
+<span class="var">$history</span>     = <span class="fn">json_decode</span>(<span class="fn">file_get_contents</span>(<span class="var">$historyFile</span>), <span class="kw">true</span>) ?? [];
+<span class="var">$db</span>          = <span class="fn">getDB</span>();
+
+<span class="var">$sql</span> = <span class="str">"INSERT IGNORE INTO kpi_entries
+        (batch_id, entry_date, room_code, slot_code, staff_id, scope,
+         category, indicator, check_value, weight, earned_points, possible_points,
+         comment, submitted_by, present_staff, created_at)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"</span>;
+<span class="var">$stmt</span>    = <span class="var">$db</span>-><span class="fn">prepare</span>(<span class="var">$sql</span>);
+<span class="var">$saved</span>   = <span class="num">0</span>;
+<span class="var">$skipped</span> = <span class="num">0</span>;
+
+<span class="kw">foreach</span> (<span class="var">$history</span> <span class="kw">as</span> <span class="var">$rec</span>) {
+    <span class="kw">if</span> ((<span class="var">$rec</span>[<span class="str">'type'</span>] ?? <span class="str">''</span>) === <span class="str">'finalize'</span>) { <span class="var">$skipped</span>++; <span class="kw">continue</span>; }
+
+    <span class="var">$header</span>  = <span class="var">$rec</span>[<span class="str">'header'</span>] ?? [];
+    <span class="var">$batchId</span> = <span class="var">$rec</span>[<span class="str">'batchId'</span>] ?? <span class="str">''</span>;
+    <span class="var">$date</span>    = <span class="fn">sanitizeDate</span>(<span class="var">$header</span>[<span class="str">'date'</span>] ?? <span class="str">''</span>);
+    <span class="var">$room</span>    = <span class="var">$header</span>[<span class="str">'roomCode'</span>]  ?? <span class="str">''</span>;
+    <span class="var">$slot</span>    = <span class="var">$header</span>[<span class="str">'slotCode'</span>]  ?? <span class="str">''</span>;
+    <span class="var">$type</span>    = <span class="var">$rec</span>[<span class="str">'type'</span>] ?? <span class="str">'team'</span>;
+    <span class="var">$scope</span>   = (<span class="var">$type</span> === <span class="str">'individual'</span>) ? <span class="str">'Individual'</span> : <span class="str">'Team'</span>;
+    <span class="var">$by</span>      = <span class="var">$rec</span>[<span class="str">'by'</span>] ?? <span class="str">'migration'</span>;
+    <span class="var">$createdAt</span> = <span class="fn">date</span>(<span class="str">'Y-m-d H:i:s'</span>, <span class="var">$rec</span>[<span class="str">'time'</span>] ?? <span class="fn">time</span>());
+    <span class="var">$presentStr</span> = <span class="fn">implode</span>(<span class="str">','</span>, <span class="var">$header</span>[<span class="str">'presentStaffIds'</span>] ?? []);
+
+    <span class="kw">if</span> (<span class="var">$scope</span> === <span class="str">'Team'</span>) {
+        <span class="var">$staffIds</span> = <span class="var">$header</span>[<span class="str">'presentStaffIds'</span>] ?? [];
+    } <span class="kw">else</span> {
+        <span class="var">$staffIds</span> = [<span class="var">$rec</span>[<span class="str">'member'</span>][<span class="str">'staffId'</span>] ?? <span class="str">''</span>];
+    }
+
+    <span class="kw">foreach</span> (<span class="var">$rec</span>[<span class="str">'items'</span>] ?? [] <span class="kw">as</span> <span class="var">$item</span>) {
+        <span class="kw">foreach</span> (<span class="var">$staffIds</span> <span class="kw">as</span> <span class="var">$staffId</span>) {
+            <span class="kw">if</span> (!<span class="var">$staffId</span>) <span class="kw">continue</span>;
+            <span class="var">$check</span>  = (<span class="fn">strtolower</span>(<span class="var">$item</span>[<span class="str">'check'</span>] ?? <span class="str">'yes'</span>) === <span class="str">'yes'</span>) ? <span class="num">1</span> : <span class="num">0</span>;
+            <span class="var">$w</span>      = (float)(<span class="var">$item</span>[<span class="str">'weight'</span>] ?? <span class="num">1</span>);
+            <span class="var">$stmt</span>-><span class="fn">execute</span>([
+                <span class="var">$batchId</span>, <span class="var">$date</span>, <span class="var">$room</span>, <span class="var">$slot</span>, <span class="var">$staffId</span>, <span class="var">$scope</span>,
+                <span class="var">$item</span>[<span class="str">'category'</span>] ?? <span class="str">''</span>,
+                <span class="var">$item</span>[<span class="str">'indicator'</span>] ?? <span class="str">''</span>,
+                <span class="var">$check</span>, <span class="var">$w</span>,
+                <span class="var">$check</span> ? <span class="var">$w</span> : <span class="num">0</span>, <span class="var">$w</span>,
+                <span class="var">$item</span>[<span class="str">'comment'</span>] ?? <span class="kw">null</span>,
+                <span class="var">$by</span>, <span class="var">$presentStr</span>, <span class="var">$createdAt</span>
+            ]);
+            <span class="var">$saved</span> += <span class="var">$stmt</span>-><span class="fn">rowCount</span>();
+        }
+    }
+}
+
+echo <span class="str">"Migration done. Saved: {$saved}, Skipped (finalize): {$skipped}\n"</span>;
+</div>
+
+
+<!-- 13. HTACCESS -->
+<h2>13. .htaccess</h2>
+<div class="code">
+<span class="cm"># Захист конфігурації</span>
+&lt;Files <span class="str">"config.env.php"</span>&gt;
+  Require all denied
+&lt;/Files&gt;
+
+<span class="cm"># Заборонити directory listing</span>
+Options -Indexes
+
+<span class="cm"># CORS для API (якщо форма і API на різних доменах)</span>
+&lt;IfModule mod_headers.c&gt;
+  Header set Access-Control-Allow-Origin <span class="str">"*"</span>
+  Header set Access-Control-Allow-Methods <span class="str">"GET, POST, OPTIONS"</span>
+  Header set Access-Control-Allow-Headers <span class="str">"Content-Type"</span>
+&lt;/IfModule&gt;
+
+<span class="cm"># PHP помилки — тільки в development</span>
+<span class="cm"># php_flag display_errors Off  ← раскоментувати на production</span>
+</div>
+
+
+<!-- 14. ЧЕКЛИСТ ДЕПЛОЮ -->
+<h2>14. Чеклист деплою</h2>
+<table>
+  <thead><tr><th>#</th><th>Дія</th><th>Як перевірити</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td>Створити MySQL БД <code>te_kpi</code> і користувача <code>te_kpi_user</code> через phpMyAdmin</td><td>Підключення через phpMyAdmin</td></tr>
+    <tr><td>2</td><td>Запустити <code>install.sql</code> — створити всі таблиці</td><td>phpMyAdmin → перелік таблиць</td></tr>
+    <tr><td>3</td><td>Заповнити <code>api/config.env.php</code> реальними даними БД</td><td>—</td></tr>
+    <tr><td>4</td><td>Завантажити всі файли на хостинг через FTP до <code>/public_html/kpi/</code></td><td>FTP клієнт</td></tr>
+    <tr><td>5</td><td>Перевірити <code>GET /api/config.php</code> — має повернути порожні масиви (БД порожня)</td><td>Браузер → відкрити URL</td></tr>
+    <tr><td>6</td><td>Заповнити конфіги: rooms, slots, staff, indicators (SQL INSERT або PHP-скрипт)</td><td><code>GET /api/config.php</code> → масиви не порожні</td></tr>
+    <tr><td>7</td><td>Запустити <code>migrate/migrate_v2.php</code> — імпорт kpi_history.json</td><td>Відповідь "Migration done. Saved: N"</td></tr>
+    <tr><td>8</td><td>Відкрити <code>form.html</code> — форма завантажується, кімнати і слоти є в дропдаунах</td><td>Браузер</td></tr>
+    <tr><td>9</td><td>Заповнити форму і натиснути Save — відповідь <code>{"ok":true,"saved":N}</code></td><td>DevTools → Network</td></tr>
+    <tr><td>10</td><td>Відкрити <code>dashboard.html</code> — KPI-таблиця показує записаний запис</td><td>Браузер</td></tr>
+    <tr><td>11</td><td>Перевірити UNIQUE KEY: зберегти той самий слот двічі — другий раз <code>saved: 0</code></td><td>DevTools → Network</td></tr>
+    <tr><td>12</td><td>Видалити або заблокувати <code>migrate/</code> папку після міграції</td><td>.htaccess deny або FTP видалення</td></tr>
+  </tbody>
+</table>
+
+<div class="good" style="margin-top:24px;">
+  <strong>Мінімальна версія для старту:</strong> кроки 1–9. Дашборд (крок 10) — Фаза 2.
+  Система готова до реального використання після кроку 9.
+</div>
+
+</body>
+</html>
