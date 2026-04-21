@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8"/>
+<title>PRD — KPI System V3 · Tiny Einstein</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: Inter, Arial, sans-serif; background: #f8fafc; color: #1e293b; padding: 48px 28px; max-width: 1020px; margin: 0 auto; line-height: 1.7; }
+
+/* HEADER */
+.prd-header { background: #0f172a; border-radius: 16px; padding: 36px 40px; margin-bottom: 48px; }
+.prd-header h1 { font-size: 26px; font-weight: 800; color: #f8fafc; margin-bottom: 4px; }
+.prd-header .sub { font-size: 14px; color: #64748b; margin-bottom: 20px; }
+.meta-row { display: flex; gap: 24px; flex-wrap: wrap; }
+.meta-item { font-size: 12px; }
+.meta-item .label { color: #475569; text-transform: uppercase; letter-spacing: .5px; font-weight: 700; }
+.meta-item .value { color: #94a3b8; }
+
+/* SECTIONS */
+h2 { font-size: 18px; font-weight: 800; color: #0f172a; margin: 48px 0 16px; padding-bottom: 8px; border-bottom: 2px solid #e2e8f0; }
+h3 { font-size: 14px; font-weight: 700; color: #334155; margin: 24px 0 10px; }
+h4 { font-size: 13px; font-weight: 700; color: #64748b; margin: 16px 0 6px; text-transform: uppercase; letter-spacing: .5px; }
+
+p { font-size: 14px; color: #475569; margin-bottom: 10px; }
+ul, ol { padding-left: 20px; margin-bottom: 12px; }
+li { font-size: 14px; color: #475569; margin-bottom: 4px; }
+
+/* BOXES */
+.info  { background: #eff6ff; border-left: 4px solid #3b82f6; border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 12px 0; font-size: 13px; color: #1e40af; }
+.warn  { background: #fff7ed; border-left: 4px solid #f97316; border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 12px 0; font-size: 13px; color: #7c2d12; }
+.good  { background: #f0fdf4; border-left: 4px solid #22c55e; border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 12px 0; font-size: 13px; color: #14532d; }
+
+/* TABLE */
+table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 12px 0 20px; }
+th { background: #1e293b; color: #e2e8f0; padding: 10px 14px; text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .5px; font-weight: 700; }
+td { padding: 10px 14px; border-bottom: 1px solid #e2e8f0; vertical-align: top; }
+tr:nth-child(even) td { background: #f8fafc; }
+
+/* CODE */
+.code { background: #0f172a; color: #e2e8f0; border-radius: 10px; padding: 16px 20px; font-family: 'Courier New', monospace; font-size: 12px; margin: 10px 0; overflow-x: auto; white-space: pre; line-height: 1.6; }
+.code .kw  { color: #7dd3fc; }
+.code .str { color: #86efac; }
+.code .cm  { color: #475569; }
+.code .fn  { color: #fbbf24; }
+.code .num { color: #f9a8d4; }
+
+/* ARCH DIAGRAM */
+.arch { background: #0f172a; border-radius: 14px; padding: 28px; margin: 16px 0; }
+.arch-row { display: flex; align-items: center; gap: 0; justify-content: center; flex-wrap: wrap; margin-bottom: 6px; }
+.arch-box { border-radius: 10px; padding: 10px 18px; font-size: 12px; font-weight: 700; text-align: center; min-width: 120px; }
+.arch-arrow { color: #334155; font-size: 20px; padding: 0 6px; }
+.b-blue   { background: #1e3a5f; border: 1.5px solid #3b82f6; color: #93c5fd; }
+.b-green  { background: #1a2e1a; border: 1.5px solid #22c55e; color: #86efac; }
+.b-orange { background: #2a1a0a; border: 1.5px solid #f97316; color: #fdba74; }
+.b-purple { background: #1e1a2e; border: 1.5px solid #8b5cf6; color: #c4b5fd; }
+.arch-label { font-size: 10px; color: #475569; text-align: center; margin-bottom: 14px; letter-spacing: 1px; text-transform: uppercase; }
+
+/* TAG */
+.tag { display: inline-block; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 999px; margin: 2px; }
+.t-must  { background: #fce7f3; color: #831843; }
+.t-should{ background: #fef9c3; color: #713f12; }
+.t-could { background: #f0fdf4; color: #14532d; }
+
+/* STATUS */
+.status { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 9px; border-radius: 999px; }
+.s-must   { background: #dc2626; color: #fff; }
+.s-should { background: #d97706; color: #fff; }
+.s-nice   { background: #16a34a; color: #fff; }
+
+/* DIVIDER */
+.divider { height: 2px; background: linear-gradient(to right, #3b82f6, #8b5cf6, #ec4899); border-radius: 2px; margin: 40px 0; }
+
+/* TOC */
+.toc { background: #fff; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 20px 24px; margin-bottom: 40px; }
+.toc-title { font-size: 12px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+.toc ul { list-style: none; padding: 0; columns: 2; }
+.toc li { font-size: 13px; color: #3b82f6; margin-bottom: 6px; }
+.toc li::before { content: "→ "; color: #94a3b8; }
+
+/* DB SCHEMA */
+.schema-table { background: #0f172a; border-radius: 10px; padding: 16px 20px; margin: 8px 0 20px; }
+.schema-name { font-size: 13px; font-weight: 700; color: #fbbf24; margin-bottom: 8px; }
+.schema-row { display: flex; gap: 12px; font-family: 'Courier New', monospace; font-size: 12px; padding: 3px 0; border-bottom: 1px solid #1e293b; }
+.schema-col { color: #7dd3fc; min-width: 180px; }
+.schema-type { color: #86efac; min-width: 140px; }
+.schema-note { color: #64748b; }
+
+/* ENDPOINT */
+.endpoint { background: #fff; border: 1.5px solid #e2e8f0; border-radius: 10px; padding: 14px 18px; margin: 8px 0; }
+.ep-method { font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 6px; margin-right: 8px; }
+.ep-get    { background: #dcfce7; color: #166534; }
+.ep-post   { background: #dbeafe; color: #1e3a8a; }
+.ep-path   { font-family: 'Courier New', monospace; font-size: 13px; font-weight: 700; color: #0f172a; }
+.ep-desc   { font-size: 12px; color: #64748b; margin-top: 4px; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="prd-header">
+  <h1>KPI System V3 — Product Requirements Document</h1>
+  <p class="sub">Tiny Einstein Daycare · dev.tinyeinstein.org</p>
+  <div class="meta-row">
+    <div class="meta-item"><span class="label">Версія</span><br><span class="value">1.0</span></div>
+    <div class="meta-item"><span class="label">Дата</span><br><span class="value">20.04.2026</span></div>
+    <div class="meta-item"><span class="label">Статус</span><br><span class="value">Чернетка → Готово до розробки</span></div>
+    <div class="meta-item"><span class="label">Попередні версії</span><br><span class="value">V1 (store.json + GAS), V2 (kpi_history.json + GAS)</span></div>
+    <div class="meta-item"><span class="label">Чому V3</span><br><span class="value">V2 зламана (24 баги), Google Sheets — не БД</span></div>
+  </div>
+</div>
+
+<!-- TOC -->
+<div class="toc">
+  <div class="toc-title">Зміст</div>
+  <ul>
+    <li>1. Контекст і мотивація</li>
+    <li>2. Цілі і не-цілі</li>
+    <li>3. Користувачі системи</li>
+    <li>4. Архітектура V3</li>
+    <li>5. База даних MySQL</li>
+    <li>6. PHP REST API</li>
+    <li>7. Форма введення KPI</li>
+    <li>8. Дашборд і фільтри</li>
+    <li>9. Математика KPI</li>
+    <li>10. Міграція з V2</li>
+    <li>11. Файлова структура</li>
+    <li>12. Roadmap розробки</li>
+  </ul>
+</div>
+
+
+<!-- 1. КОНТЕКСТ -->
+<h2>1. Контекст і мотивація</h2>
+
+<h3>Чому замінюємо Google Sheets</h3>
+<table>
+  <thead><tr><th>Проблема V1/V2</th><th>Наслідок</th><th>Рішення V3</th></tr></thead>
+  <tbody>
+    <tr><td>Ліміт ~10M клітинок Google Sheets</td><td>Втрата квітня 2026 назавжди</td><td>MySQL — необмежено</td></tr>
+    <tr><td>GAS timeout 6 сек, падає при навантаженні</td><td>Дані не записуються</td><td>Прямий SQL INSERT за 5мс</td></tr>
+    <tr><td>sync.php видаляв чергу при помилці GAS</td><td>Мовчазна втрата даних</td><td>Транзакції MySQL — або все або нічого</td></tr>
+    <tr><td>Немає фільтрів, немає дашборду</td><td>Аналіз тільки вручну в таблиці</td><td>SQL запити + веб-дашборд</td></tr>
+    <tr><td>Залежність від Google-акаунту</td><td>Блокування = втрата всього</td><td>Дані на власному хостингу</td></tr>
+    <tr><td>V2 має 24 баги, система не працює</td><td>Дані не синхронізуються з березня 2026</td><td>Нова архітектура без legacy</td></tr>
+  </tbody>
+</table>
+
+<div class="good">
+  <strong>Ключова перевага V3:</strong> всі компоненти на одному хостингу. MySQL вже включений в більшість PHP-хостингів.
+  Жодних зовнішніх залежностей — немає GAS, немає Google, немає проксі, немає черги синхронізації.
+</div>
+
+
+<!-- 2. ЦІЛІ -->
+<h2>2. Цілі і не-цілі</h2>
+
+<h3>Цілі (що система ПОВИННА робити)</h3>
+<ul>
+  <li>Менеджер вводить KPI через веб-форму — дані зберігаються <strong>одразу і надійно</strong></li>
+  <li>Кожен індикатор має вагу — система рахує EarnedPoints / PossiblePoints</li>
+  <li>TotalKPI% = TeamKPI%×0.8 + IndividualKPI%×0.2 (Admin = 100% Team)</li>
+  <li>Дашборд: перегляд KPI по датах, кімнатах, стафу</li>
+  <li>Фільтр порушень: які індикатори порушуються найчастіше і ким</li>
+  <li>Дані ніколи не губляться — немає черги, немає синку, немає зовнішніх сервісів</li>
+  <li>Система працює офлайн (локальний PHP+MySQL на хостингу)</li>
+</ul>
+
+<h3>Не-цілі (що V3 НЕ робить)</h3>
+<ul>
+  <li>❌ Не зберігає копію в Google Sheets (можна додати пізніше як опцію)</li>
+  <li>❌ Не має мобільного додатку (responsive веб-інтерфейс достатньо)</li>
+  <li>❌ Не має системи авторизації з ролями (проста http-auth або нічого — V3.1)</li>
+  <li>❌ Не має real-time оновлень (достатньо refresh сторінки)</li>
+</ul>
+
+
+<!-- 3. КОРИСТУВАЧІ -->
+<h2>3. Користувачі системи</h2>
+
+<table>
+  <thead><tr><th>Роль</th><th>Що робить</th><th>Які сторінки</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Менеджер</strong></td><td>Заповнює KPI-форму по кімнаті та слоту раз на зміну</td><td>form.html</td></tr>
+    <tr><td><strong>Адміністратор</strong></td><td>Переглядає дашборд, фільтрує, аналізує порушення</td><td>dashboard.html</td></tr>
+    <tr><td><strong>Директор</strong></td><td>Переглядає зведені KPI по місяцях/кварталах</td><td>dashboard.html → фільтр</td></tr>
+    <tr><td><strong>Розробник</strong></td><td>Управляє конфігами кімнат/слотів/індикаторів</td><td>admin.html або MySQL Adminer</td></tr>
+  </tbody>
+</table>
+
+
+<!-- 4. АРХІТЕКТУРА -->
+<h2>4. Архітектура V3</h2>
+
+<div class="arch">
+  <div class="arch-label">Браузер</div>
+  <div class="arch-row">
+    <div class="arch-box b-blue">form.html<br><small>Введення KPI</small></div>
+    <div class="arch-arrow">·</div>
+    <div class="arch-box b-blue">dashboard.html<br><small>Перегляд / фільтри</small></div>
+    <div class="arch-arrow">·</div>
+    <div class="arch-box b-blue">admin.html<br><small>Конфіги</small></div>
+  </div>
+  <div style="text-align:center;color:#334155;font-size:20px;margin:8px 0;">↓ fetch() HTTPS</div>
+  <div class="arch-label" style="margin-top:8px;">PHP Хостинг · dev.tinyeinstein.org/kpi/</div>
+  <div class="arch-row">
+    <div class="arch-box b-orange">api/kpi.php<br><small>POST → зберегти</small></div>
+    <div class="arch-arrow">·</div>
+    <div class="arch-box b-orange">api/reports.php<br><small>GET → дашборд</small></div>
+    <div class="arch-arrow">·</div>
+    <div class="arch-box b-orange">api/config.php<br><small>GET/POST конфіги</small></div>
+  </div>
+  <div style="text-align:center;color:#334155;font-size:20px;margin:8px 0;">↓ SQL запити (PDO)</div>
+  <div class="arch-label" style="margin-top:8px;">MySQL · той самий хостинг</div>
+  <div class="arch-row">
+    <div class="arch-box b-green">kpi_entries<br><small>Всі KPI записи</small></div>
+    <div class="arch-arrow">·</div>
+    <div class="arch-box b-green">staff / rooms<br><small>Конфіги</small></div>
+    <div class="arch-arrow">·</div>
+    <div class="arch-box b-green">indicators<br><small>Ваги індикаторів</small></div>
+  </div>
+</div>
+
+<h3>Порівняння V2 vs V3</h3>
+<table>
+  <thead><tr><th>Компонент</th><th>V2</th><th>V3</th></tr></thead>
+  <tbody>
+    <tr><td>Зберігання даних</td><td>kpi_history.json (файл)</td><td>MySQL таблиця kpi_entries</td></tr>
+    <tr><td>Синхронізація</td><td>sync_sheets.php → GAS → Sheets</td><td>❌ Не потрібна (дані одразу в БД)</td></tr>
+    <tr><td>Підрахунок summary</td><td>rebuild_summary.php → JSON файли</td><td>SQL GROUP BY запит в реальному часі</td></tr>
+    <tr><td>Перегляд даних</td><td>Тільки Google Sheets вручну</td><td>Веб-дашборд з фільтрами</td></tr>
+    <tr><td>Надійність запису</td><td>❌ Дані губляться при помилці GAS</td><td>✅ MySQL транзакції</td></tr>
+    <tr><td>Залежності</td><td>Google акаунт + GAS + Sheets</td><td>Тільки хостинг (вже оплачений)</td></tr>
+    <tr><td>Кількість PHP файлів</td><td>8 файлів + engine/ + GAS</td><td>3 API файли</td></tr>
+  </tbody>
+</table>
+
+
+<!-- 5. БАЗА ДАНИХ -->
+<h2>5. База даних MySQL — Схема</h2>
+
+<h3>Таблиця: kpi_entries (головна)</h3>
+<div class="schema-table">
+  <div class="schema-name">TABLE kpi_entries</div>
+  <div class="schema-row"><span class="schema-col">id</span><span class="schema-type">INT AUTO_INCREMENT PK</span><span class="schema-note">— унікальний ID рядка</span></div>
+  <div class="schema-row"><span class="schema-col">batch_id</span><span class="schema-type">VARCHAR(64) NOT NULL</span><span class="schema-note">— ID одного заповнення форми (прив'язує team + individual)</span></div>
+  <div class="schema-row"><span class="schema-col">entry_date</span><span class="schema-type">DATE NOT NULL</span><span class="schema-note">— дата KPI (MM-DD-YYYY → зберігаємо як DATE)</span></div>
+  <div class="schema-row"><span class="schema-col">room_code</span><span class="schema-type">VARCHAR(32) NOT NULL</span><span class="schema-note">— Pink, Green, Blue, Admin...</span></div>
+  <div class="schema-row"><span class="schema-col">slot_code</span><span class="schema-type">VARCHAR(32) NOT NULL</span><span class="schema-note">— 09AM_11AM, 11AM_01PM...</span></div>
+  <div class="schema-row"><span class="schema-col">staff_id</span><span class="schema-type">VARCHAR(64) NOT NULL</span><span class="schema-note">— st_tamar, st_alla... або "TEAM" для командних</span></div>
+  <div class="schema-row"><span class="schema-col">scope</span><span class="schema-type">ENUM('Team','Individual')</span><span class="schema-note">— тип індикатора</span></div>
+  <div class="schema-row"><span class="schema-col">category</span><span class="schema-type">VARCHAR(128) NOT NULL</span><span class="schema-note">— Environment, Hygiene & Care...</span></div>
+  <div class="schema-row"><span class="schema-col">indicator</span><span class="schema-type">VARCHAR(512) NOT NULL</span><span class="schema-note">— текст індикатора</span></div>
+  <div class="schema-row"><span class="schema-col">check_value</span><span class="schema-type">TINYINT(1) NOT NULL</span><span class="schema-note">— 1=yes (виконано), 0=no (порушення)</span></div>
+  <div class="schema-row"><span class="schema-col">weight</span><span class="schema-type">DECIMAL(5,2) NOT NULL DEFAULT 1</span><span class="schema-note">— вага індикатора</span></div>
+  <div class="schema-row"><span class="schema-col">earned_points</span><span class="schema-type">DECIMAL(8,2) NOT NULL</span><span class="schema-note">— weight якщо yes, 0 якщо no</span></div>
+  <div class="schema-row"><span class="schema-col">possible_points</span><span class="schema-type">DECIMAL(8,2) NOT NULL</span><span class="schema-note">— завжди = weight</span></div>
+  <div class="schema-row"><span class="schema-col">comment</span><span class="schema-type">TEXT DEFAULT NULL</span><span class="schema-note">— коментар менеджера</span></div>
+  <div class="schema-row"><span class="schema-col">submitted_by</span><span class="schema-type">VARCHAR(64)</span><span class="schema-note">— хто ввів</span></div>
+  <div class="schema-row"><span class="schema-col">present_staff</span><span class="schema-type">VARCHAR(512)</span><span class="schema-note">— список присутніх (через кому) для team-записів</span></div>
+  <div class="schema-row"><span class="schema-col">created_at</span><span class="schema-type">DATETIME DEFAULT NOW()</span><span class="schema-note">— коли введено (UTC)</span></div>
+</div>
+
+<div class="code">
+<span class="cm">-- Індекси для швидких запитів дашборду</span>
+<span class="kw">CREATE INDEX</span> idx_date        <span class="kw">ON</span> kpi_entries (entry_date);
+<span class="kw">CREATE INDEX</span> idx_room_date   <span class="kw">ON</span> kpi_entries (room_code, entry_date);
+<span class="kw">CREATE INDEX</span> idx_staff_date  <span class="kw">ON</span> kpi_entries (staff_id, entry_date);
+<span class="kw">CREATE INDEX</span> idx_batch       <span class="kw">ON</span> kpi_entries (batch_id);
+<span class="cm">-- Унікальний ключ для дедублікації:</span>
+<span class="kw">UNIQUE KEY</span>  uq_entry (batch_id, staff_id, indicator(200));
+</div>
+
+<h3>Таблиця: staff</h3>
+<div class="schema-table">
+  <div class="schema-name">TABLE staff</div>
+  <div class="schema-row"><span class="schema-col">staff_id</span><span class="schema-type">VARCHAR(64) PK</span><span class="schema-note">— st_tamar</span></div>
+  <div class="schema-row"><span class="schema-col">staff_name</span><span class="schema-type">VARCHAR(128) NOT NULL</span><span class="schema-note">— Tamar G.</span></div>
+  <div class="schema-row"><span class="schema-col">role</span><span class="schema-type">VARCHAR(64)</span><span class="schema-note">— Teacher, Admin...</span></div>
+  <div class="schema-row"><span class="schema-col">rooms</span><span class="schema-type">VARCHAR(256)</span><span class="schema-note">— Pink,Green (через кому)</span></div>
+  <div class="schema-row"><span class="schema-col">active</span><span class="schema-type">TINYINT(1) DEFAULT 1</span><span class="schema-note">— 1=активний</span></div>
+</div>
+
+<h3>Таблиця: rooms</h3>
+<div class="schema-table">
+  <div class="schema-name">TABLE rooms</div>
+  <div class="schema-row"><span class="schema-col">room_code</span><span class="schema-type">VARCHAR(32) PK</span><span class="schema-note">— Pink</span></div>
+  <div class="schema-row"><span class="schema-col">room_name</span><span class="schema-type">VARCHAR(128)</span><span class="schema-note">— Pink Room</span></div>
+  <div class="schema-row"><span class="schema-col">is_admin</span><span class="schema-type">TINYINT(1) DEFAULT 0</span><span class="schema-note">— 1 = Admin (тільки Team KPI)</span></div>
+  <div class="schema-row"><span class="schema-col">active</span><span class="schema-type">TINYINT(1) DEFAULT 1</span></div>
+</div>
+
+<h3>Таблиця: slots</h3>
+<div class="schema-table">
+  <div class="schema-name">TABLE slots</div>
+  <div class="schema-row"><span class="schema-col">slot_code</span><span class="schema-type">VARCHAR(32) PK</span><span class="schema-note">— 09AM_11AM</span></div>
+  <div class="schema-row"><span class="schema-col">slot_label</span><span class="schema-type">VARCHAR(64)</span><span class="schema-note">— 9:00 AM – 11:00 AM</span></div>
+  <div class="schema-row"><span class="schema-col">sort_order</span><span class="schema-type">INT DEFAULT 0</span></div>
+  <div class="schema-row"><span class="schema-col">active</span><span class="schema-type">TINYINT(1) DEFAULT 1</span></div>
+</div>
+
+<h3>Таблиця: indicators</h3>
+<div class="schema-table">
+  <div class="schema-name">TABLE indicators</div>
+  <div class="schema-row"><span class="schema-col">id</span><span class="schema-type">INT AUTO_INCREMENT PK</span></div>
+  <div class="schema-row"><span class="schema-col">room_code</span><span class="schema-type">VARCHAR(32)</span><span class="schema-note">— або "*" для всіх кімнат</span></div>
+  <div class="schema-row"><span class="schema-col">slot_code</span><span class="schema-type">VARCHAR(32)</span><span class="schema-note">— або "*" для всіх слотів</span></div>
+  <div class="schema-row"><span class="schema-col">scope</span><span class="schema-type">ENUM('Team','Individual')</span></div>
+  <div class="schema-row"><span class="schema-col">category</span><span class="schema-type">VARCHAR(128) NOT NULL</span></div>
+  <div class="schema-row"><span class="schema-col">indicator</span><span class="schema-type">VARCHAR(512) NOT NULL</span></div>
+  <div class="schema-row"><span class="schema-col">weight</span><span class="schema-type">DECIMAL(5,2) DEFAULT 1.00</span></div>
+  <div class="schema-row"><span class="schema-col">sort_order</span><span class="schema-type">INT DEFAULT 0</span></div>
+  <div class="schema-row"><span class="schema-col">active</span><span class="schema-type">TINYINT(1) DEFAULT 1</span></div>
+</div>
+
+
+<!-- 6. PHP API -->
+<h2>6. PHP REST API — Ендпоінти</h2>
+
+<div class="info">
+  Всі ендпоінти повертають JSON. Вхідні дані — JSON у тілі POST-запиту.
+  Файлова структура: <code>api/kpi.php</code>, <code>api/reports.php</code>, <code>api/config.php</code>
+</div>
+
+<h3>api/kpi.php — Введення KPI</h3>
+
+<div class="endpoint">
+  <span class="ep-method ep-post">POST</span>
+  <span class="ep-path">/api/kpi.php?action=saveTeam</span>
+  <div class="ep-desc">Зберегти командні KPI для одного слоту. Одна транзакція — або всі рядки або нічого.</div>
+</div>
+<div class="code">
+<span class="cm">// Вхідний JSON:</span>
+{
+  <span class="str">"batch_id"</span>: <span class="str">"B-1776634605910"</span>,
+  <span class="str">"date"</span>:     <span class="str">"04-20-2026"</span>,
+  <span class="str">"room_code"</span>:<span class="str">"Pink"</span>,
+  <span class="str">"slot_code"</span>:<span class="str">"09AM_11AM"</span>,
+  <span class="str">"present_staff_ids"</span>: [<span class="str">"st_tamar"</span>, <span class="str">"st_alla"</span>],
+  <span class="str">"submitted_by"</span>: <span class="str">"manager_1"</span>,
+  <span class="str">"items"</span>: [
+    { <span class="str">"indicator"</span>: <span class="str">"Cleanliness..."</span>, <span class="str">"check"</span>: <span class="str">"yes"</span>, <span class="str">"comment"</span>: <span class="str">""</span> },
+    { <span class="str">"indicator"</span>: <span class="str">"Temperature..."</span>, <span class="str">"check"</span>: <span class="str">"no"</span>,  <span class="str">"comment"</span>: <span class="str">"too cold"</span> }
+  ]
+}
+
+<span class="cm">// Відповідь:</span>
+{ <span class="str">"ok"</span>: <span class="kw">true</span>, <span class="str">"saved"</span>: <span class="num">8</span> }   <span class="cm">// 8 рядків (4 ind × 2 staff)</span>
+</div>
+
+<div class="endpoint">
+  <span class="ep-method ep-post">POST</span>
+  <span class="ep-path">/api/kpi.php?action=saveIndividual</span>
+  <div class="ep-desc">Зберегти індивідуальні KPI для одного стафу.</div>
+</div>
+
+<div class="endpoint">
+  <span class="ep-method ep-get">GET</span>
+  <span class="ep-path">/api/kpi.php?action=checkDuplicate&amp;batch_id=B-123&amp;staff_id=st_tamar&amp;slot_code=09AM_11AM</span>
+  <div class="ep-desc">Перевірка перед збереженням — чи вже є такий запис.</div>
+</div>
+
+<h3>api/reports.php — Дашборд і аналітика</h3>
+
+<div class="endpoint">
+  <span class="ep-method ep-get">GET</span>
+  <span class="ep-path">/api/reports.php?action=summary&amp;from=2026-04-01&amp;to=2026-04-30&amp;room=Pink</span>
+  <div class="ep-desc">KPI% по стафу за період. SQL GROUP BY — відповідь за 10–50мс.</div>
+</div>
+<div class="code">
+<span class="cm">// SQL всередині (один запит, без PHP-циклів):</span>
+<span class="kw">SELECT</span>
+  staff_id,
+  <span class="fn">ROUND</span>(<span class="fn">SUM</span>(<span class="kw">CASE WHEN</span> scope=<span class="str">'Team'</span>       <span class="kw">THEN</span> earned_points <span class="kw">ELSE</span> <span class="num">0</span> <span class="kw">END</span>) /
+        <span class="fn">SUM</span>(<span class="kw">CASE WHEN</span> scope=<span class="str">'Team'</span>       <span class="kw">THEN</span> possible_points <span class="kw">ELSE</span> <span class="num">0</span> <span class="kw">END</span>) * <span class="num">100</span>, <span class="num">2</span>) <span class="kw">AS</span> team_kpi,
+  <span class="fn">ROUND</span>(<span class="fn">SUM</span>(<span class="kw">CASE WHEN</span> scope=<span class="str">'Individual'</span> <span class="kw">THEN</span> earned_points <span class="kw">ELSE</span> <span class="num">0</span> <span class="kw">END</span>) /
+        <span class="fn">NULLIF</span>(<span class="fn">SUM</span>(<span class="kw">CASE WHEN</span> scope=<span class="str">'Individual'</span> <span class="kw">THEN</span> possible_points <span class="kw">ELSE</span> <span class="num">0</span> <span class="kw">END</span>),<span class="num">0</span>) * <span class="num">100</span>, <span class="num">2</span>) <span class="kw">AS</span> ind_kpi
+<span class="kw">FROM</span> kpi_entries
+<span class="kw">WHERE</span> room_code = <span class="str">'Pink'</span> <span class="kw">AND</span> entry_date <span class="kw">BETWEEN</span> <span class="str">'2026-04-01'</span> <span class="kw">AND</span> <span class="str">'2026-04-30'</span>
+<span class="kw">GROUP BY</span> staff_id;
+</div>
+
+<div class="endpoint">
+  <span class="ep-method ep-get">GET</span>
+  <span class="ep-path">/api/reports.php?action=violations&amp;from=2026-04-01&amp;to=2026-04-30</span>
+  <div class="ep-desc">Топ порушень: які індикатори найчастіше check=no, по кімнатах і стафу.</div>
+</div>
+<div class="code">
+<span class="cm">// SQL запит для топ-порушень:</span>
+<span class="kw">SELECT</span> room_code, indicator, category,
+       <span class="fn">COUNT</span>(*) <span class="kw">AS</span> violations,
+       <span class="fn">COUNT</span>(<span class="kw">DISTINCT</span> entry_date) <span class="kw">AS</span> days_violated
+<span class="kw">FROM</span> kpi_entries
+<span class="kw">WHERE</span> check_value = <span class="num">0</span>
+  <span class="kw">AND</span> entry_date <span class="kw">BETWEEN</span> <span class="str">'2026-04-01'</span> <span class="kw">AND</span> <span class="str">'2026-04-30'</span>
+<span class="kw">GROUP BY</span> room_code, indicator, category
+<span class="kw">ORDER BY</span> violations <span class="kw">DESC</span>
+<span class="kw">LIMIT</span> <span class="num">20</span>;
+</div>
+
+<div class="endpoint">
+  <span class="ep-method ep-get">GET</span>
+  <span class="ep-path">/api/reports.php?action=daily&amp;date=2026-04-20&amp;room=Green</span>
+  <div class="ep-desc">Детальний денний звіт по кімнаті — всі записи за день.</div>
+</div>
+
+<div class="endpoint">
+  <span class="ep-method ep-get">GET</span>
+  <span class="ep-path">/api/reports.php?action=monthly&amp;year=2026&amp;month=4</span>
+  <div class="ep-desc">Місячний зведений KPI — по всіх стафах і кімнатах.</div>
+</div>
+
+<h3>api/config.php — Конфігурація</h3>
+
+<div class="endpoint">
+  <span class="ep-method ep-get">GET</span>
+  <span class="ep-path">/api/config.php</span>
+  <div class="ep-desc">Повертає всі конфіги для UI: кімнати, слоти, стаф, індикатори з вагами.</div>
+</div>
+<div class="endpoint">
+  <span class="ep-method ep-post">POST</span>
+  <span class="ep-path">/api/config.php?action=updateIndicator</span>
+  <div class="ep-desc">Оновити вагу або статус індикатора.</div>
+</div>
+
+
+<!-- 7. ФОРМА -->
+<h2>7. Форма введення KPI (form.html)</h2>
+
+<h3>Вимоги до UI форми</h3>
+<table>
+  <thead><tr><th>Елемент</th><th>Поведінка</th><th>Пріоритет</th></tr></thead>
+  <tbody>
+    <tr><td>Вибір дати</td><td>Дефолт — сьогодні. Дозволяти вводити минулі дати</td><td><span class="status s-must">MUST</span></td></tr>
+    <tr><td>Вибір кімнати</td><td>Dropdown з активних rooms. Змінює список індикаторів</td><td><span class="status s-must">MUST</span></td></tr>
+    <tr><td>Вибір слоту</td><td>Dropdown з активних slots</td><td><span class="status s-must">MUST</span></td></tr>
+    <tr><td>Вибір присутніх стафів</td><td>Чекбокси (мультивибір). Фільтрується по кімнаті</td><td><span class="status s-must">MUST</span></td></tr>
+    <tr><td>Team KPI секція</td><td>Індикатори Scope=Team — один чекбокс для всієї команди</td><td><span class="status s-must">MUST</span></td></tr>
+    <tr><td>Individual KPI секція</td><td>Індикатори Scope=Individual — по вкладках для кожного стафу</td><td><span class="status s-must">MUST</span></td></tr>
+    <tr><td>Поле Comment</td><td>З'являється при check=no. Опціональний текст</td><td><span class="status s-must">MUST</span></td></tr>
+    <tr><td>Кнопка Зберегти</td><td>POST → api/kpi.php. Показує spinner. Блокується після успіху</td><td><span class="status s-must">MUST</span></td></tr>
+    <tr><td>Перевірка дублікату</td><td>Перед збереженням — GET checkDuplicate. Якщо є — попередження</td><td><span class="status s-must">MUST</span></td></tr>
+    <tr><td>Показ ваг</td><td>Біля кожного індикатора — вага в дужках (weight: 2)</td><td><span class="status s-should">SHOULD</span></td></tr>
+    <tr><td>Прогрес форми</td><td>Лічильник "заповнено X з Y"</td><td><span class="status s-nice">NICE</span></td></tr>
+  </tbody>
+</table>
+
+<h3>Логіка збереження (frontend)</h3>
+<div class="code">
+<span class="cm">// 1. Перевірка дублікату</span>
+<span class="kw">const</span> dup = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">`/api/kpi.php?action=checkDuplicate&batch_id=${batchId}&...`</span>);
+<span class="kw">if</span>(dup.exists) { <span class="fn">showWarning</span>(<span class="str">"Цей слот вже збережено!"</span>); <span class="kw">return</span>; }
+
+<span class="cm">// 2. Зберегти Team KPI</span>
+<span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">'/api/kpi.php?action=saveTeam'</span>, { method: <span class="str">'POST'</span>, body: teamPayload });
+
+<span class="cm">// 3. Зберегти Individual KPI для кожного стафу</span>
+<span class="kw">for</span>(<span class="kw">const</span> staffId <span class="kw">of</span> presentStaff){
+  <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">'/api/kpi.php?action=saveIndividual'</span>, { method: <span class="str">'POST'</span>, body: indPayload(staffId) });
+}
+
+<span class="cm">// 4. Показати підтвердження і заблокувати форму</span>
+</div>
+
+
+<!-- 8. ДАШБОРД -->
+<h2>8. Дашборд і фільтри (dashboard.html)</h2>
+
+<h3>Блоки дашборду</h3>
+<table>
+  <thead><tr><th>Блок</th><th>Що показує</th><th>Фільтри</th><th>Пріоритет</th></tr></thead>
+  <tbody>
+    <tr><td><strong>KPI Summary</strong></td><td>TeamKPI%, IndKPI%, TotalKPI% по кожному стафу</td><td>Дата від/до, кімната</td><td><span class="status s-must">MUST</span></td></tr>
+    <tr><td><strong>Топ порушень</strong></td><td>Які індикатори порушуються найчастіше (check=no)</td><td>Місяць, кімната, стаф</td><td><span class="status s-must">MUST</span></td></tr>
+    <tr><td><strong>Денний звіт</strong></td><td>Всі записи за конкретний день по кімнаті</td><td>Дата, кімната</td><td><span class="status s-must">MUST</span></td></tr>
+    <tr><td><strong>Місячний KPI</strong></td><td>KPI% по місяцях у вигляді таблиці</td><td>Рік, кімната</td><td><span class="status s-must">MUST</span></td></tr>
+    <tr><td><strong>Квартальний KPI</strong></td><td>Зведення по кварталах</td><td>Рік</td><td><span class="status s-should">SHOULD</span></td></tr>
+    <tr><td><strong>Графік KPI</strong></td><td>Динаміка KPI% по тижнях (Chart.js)</td><td>Стаф, кімната</td><td><span class="status s-should">SHOULD</span></td></tr>
+    <tr><td><strong>Стаф-профіль</strong></td><td>Детальна картка по одному співробітнику</td><td>Стаф ID, період</td><td><span class="status s-nice">NICE</span></td></tr>
+  </tbody>
+</table>
+
+<h3>Приклад — блок "Топ порушень"</h3>
+<div class="info">
+  Відповідає на питання: <em>"Які правила порушуються найчастіше і в якій кімнаті?"</em><br>
+  Допомагає директору зрозуміти системні проблеми, а не лише оцінити конкретного стафу.
+</div>
+<div class="code">
+<span class="cm">// Приклад відображення:</span>
+┌─────────────────────────────────────────────────────────────┐
+│  ТОП ПОРУШЕНЬ · Квітень 2026 · Всі кімнати                  │
+├─────┬──────────┬───────────────────────────┬───────┬────────┤
+│  #  │ Кімната  │ Індикатор                 │ Разів │  Днів  │
+├─────┼──────────┼───────────────────────────┼───────┼────────┤
+│  1  │ Green    │ Cleanliness of classroom  │   12  │   8    │
+│  2  │ Pink     │ TE bags are checked       │    8  │   6    │
+│  3  │ Blue     │ Temperature comfortable   │    5  │   4    │
+└─────┴──────────┴───────────────────────────┴───────┴────────┘
+</div>
+
+
+<!-- 9. МАТЕМАТИКА -->
+<h2>9. Математика KPI — Специфікація розрахунку</h2>
+
+<h3>Правила розрахунку (незмінні)</h3>
+<div class="code">
+<span class="cm">-- Для кожного запису в kpi_entries:</span>
+earned_points  = weight  (якщо check_value = 1)
+earned_points  = 0       (якщо check_value = 0)
+possible_points = weight  (завжди)
+
+<span class="cm">-- Team KPI для одного стафу за період:</span>
+TeamKPI% = SUM(earned_points WHERE scope='Team')
+         / SUM(possible_points WHERE scope='Team') × 100
+
+<span class="cm">-- Individual KPI:</span>
+IndKPI%  = SUM(earned_points WHERE scope='Individual')
+         / SUM(possible_points WHERE scope='Individual') × 100
+         (якщо SUM(possible) = 0 → IndKPI% = NULL, не 0)
+
+<span class="cm">-- Total KPI:</span>
+<span class="kw">IF</span> кімната = Admin:
+    TotalKPI% = TeamKPI%
+
+<span class="kw">ELSE IF</span> SUM(possible WHERE scope='Individual') = 0:
+    TotalKPI% = TeamKPI%          <span class="cm">← не ×0.8, повна вага!</span>
+
+<span class="kw">ELSE</span>:
+    TotalKPI% = TeamKPI%×0.8 + IndKPI%×0.2
+</div>
+
+<h3>Важливо: Team записи зберігаються ПО КОЖНОМУ стафу</h3>
+<div class="warn">
+  Коли менеджер вводить Team-індикатор при присутніх [st_tamar, st_alla, st_malahat],
+  система записує <strong>3 окремих рядки</strong> — по одному для кожного стафу.
+  Кожен отримує однаковий earned/possible. НЕ ділити на кількість людей.
+</div>
+<div class="code">
+<span class="cm">-- Team: 4 присутніх, індикатор weight=2, check=yes</span>
+<span class="cm">-- Записуємо 4 рядки:</span>
+(batch_id=B-123, staff_id=<span class="str">'st_tamar'</span>,   scope=<span class="str">'Team'</span>, earned=<span class="num">2</span>, possible=<span class="num">2</span>)
+(batch_id=B-123, staff_id=<span class="str">'st_alla'</span>,    scope=<span class="str">'Team'</span>, earned=<span class="num">2</span>, possible=<span class="num">2</span>)
+(batch_id=B-123, staff_id=<span class="str">'st_malahat'</span>, scope=<span class="str">'Team'</span>, earned=<span class="num">2</span>, possible=<span class="num">2</span>)
+(batch_id=B-123, staff_id=<span class="str">'st_filiz'</span>,   scope=<span class="str">'Team'</span>, earned=<span class="num">2</span>, possible=<span class="num">2</span>)
+<span class="cm">-- Кожен стаф має свій окремий рядок → легко фільтрувати по staff_id</span>
+</div>
+
+
+<!-- 10. МІГРАЦІЯ -->
+<h2>10. Міграція даних з V2</h2>
+
+<h3>Що є в kpi_history.json (V2)</h3>
+<ul>
+  <li>Записи з 03-17-2026 і 04-18–19-2026 (39 записів)</li>
+  <li>Старих даних V1 (листопад 2025 – березень 2026) — в Excel-файлі KPI.xlsx</li>
+</ul>
+
+<h3>Кроки міграції</h3>
+<table>
+  <thead><tr><th>Крок</th><th>Дія</th><th>Інструмент</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td>Створити MySQL БД і таблиці за схемою вище</td><td>phpMyAdmin або SQL-скрипт</td></tr>
+    <tr><td>2</td><td>Заповнити конфіги: staff, rooms, slots, indicators з data.json / config_indicators.json</td><td>PHP скрипт-мігратор</td></tr>
+    <tr><td>3</td><td>Конвертувати kpi_history.json → INSERT в kpi_entries</td><td>migrate_v2.php (написати)</td></tr>
+    <tr><td>4</td><td>Імпортувати Excel KPI.xlsx (листопад 2025 – березень 2026)</td><td>migrate_excel.php або вручну</td></tr>
+    <tr><td>5</td><td>Перевірити суми: COUNT по місяцях має збігатися з Excel</td><td>SQL: SELECT MONTH(entry_date), COUNT(*)</td></tr>
+    <tr><td>6</td><td>Переключити index.html на нові API ендпоінти</td><td>Зміна fetch URL</td></tr>
+    <tr><td>7</td><td>Архів V2 файлів залишити (НЕ видаляти) на 30 днів</td><td>Переіменувати папку KPI2_archive</td></tr>
+  </tbody>
+</table>
+
+<div class="warn">
+  <strong>Квітень 2026 (15 днів) — втрачено назавжди</strong> (баг V1 + ліміт Sheets).
+  Після запуску V3 ці дні потрібно ввести вручну через форму якщо є паперові записи.
+</div>
+
+
+<!-- 11. ФАЙЛОВА СТРУКТУРА -->
+<h2>11. Файлова структура V3</h2>
+
+<div class="code">
+dev.tinyeinstein.org/kpi/
+│
+├── index.html              ← перенаправляє на form.html або dashboard.html
+├── form.html               ← форма введення KPI
+├── dashboard.html          ← дашборд і фільтри
+├── admin.html              ← управління конфігами (необов'язково в V3.0)
+│
+├── api/
+│   ├── db.php              ← підключення до MySQL (PDO), одне місце
+│   ├── kpi.php             ← saveTeam, saveIndividual, checkDuplicate
+│   ├── reports.php         ← summary, violations, daily, monthly
+│   └── config.php          ← getConfig, updateIndicator
+│
+├── assets/
+│   ├── app.js              ← спільний JS (fetch helpers, formatters)
+│   ├── form.js             ← логіка форми
+│   ├── dashboard.js        ← логіка дашборду
+│   └── style.css           ← загальні стилі
+│
+├── migrate/                ← тільки для початкового імпорту, потім видалити
+│   ├── migrate_v2.php      ← kpi_history.json → MySQL
+│   └── migrate_excel.php   ← Excel KPI.xlsx → MySQL
+│
+└── .htaccess               ← захист від прямого доступу до api/*.php (CORS)
+</div>
+
+<h3>api/db.php — єдине підключення до БД</h3>
+<div class="code">
+<span class="kw">&lt;?php</span>
+<span class="cm">// api/db.php — підключення до MySQL через PDO</span>
+<span class="kw">function</span> <span class="fn">getDB</span>(){
+  <span class="kw">static</span> $pdo = <span class="kw">null</span>;
+  <span class="kw">if</span>(!$pdo){
+    $pdo = <span class="kw">new</span> <span class="fn">PDO</span>(
+      <span class="str">"mysql:host=localhost;dbname=te_kpi;charset=utf8mb4"</span>,
+      <span class="str">"db_user"</span>,
+      <span class="str">"db_password"</span>,
+      [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
+    );
+  }
+  <span class="kw">return</span> $pdo;
+}
+</div>
+
+
+<!-- 12. ROADMAP -->
+<h2>12. Roadmap розробки</h2>
+
+<table>
+  <thead><tr><th>Фаза</th><th>Задачі</th><th>Результат</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>Фаза 1</strong><br>База</td>
+      <td>
+        1. Створити MySQL БД + таблиці<br>
+        2. api/db.php<br>
+        3. api/config.php (GET)<br>
+        4. api/kpi.php (saveTeam + saveIndividual)<br>
+        5. form.html (базова форма)
+      </td>
+      <td>Менеджер може вводити KPI і воно зберігається в MySQL</td>
+    </tr>
+    <tr>
+      <td><strong>Фаза 2</strong><br>Дашборд</td>
+      <td>
+        1. api/reports.php (summary + violations)<br>
+        2. dashboard.html (KPI таблиця + топ порушень)<br>
+        3. Фільтри по даті / кімнаті / стафу
+      </td>
+      <td>Адмін бачить KPI і порушення в браузері</td>
+    </tr>
+    <tr>
+      <td><strong>Фаза 3</strong><br>Міграція</td>
+      <td>
+        1. migrate_v2.php (kpi_history.json → MySQL)<br>
+        2. migrate_excel.php (KPI.xlsx → MySQL)<br>
+        3. Перевірка даних
+      </td>
+      <td>Всі історичні дані доступні в новій системі</td>
+    </tr>
+    <tr>
+      <td><strong>Фаза 4</strong><br>Покращення</td>
+      <td>
+        1. Графіки Chart.js<br>
+        2. admin.html (управління індикаторами)<br>
+        3. HTTP Basic Auth (захист)<br>
+        4. Архівування старих записів
+      </td>
+      <td>Повноцінна продакшн-система</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="good" style="margin-top:24px;">
+  <strong>Мінімально робоча версія (MVP) — Фаза 1+2:</strong> приблизно 3–5 днів розробки
+  для досвідченого PHP-розробника. Фаза 3 (міграція) — ще 1–2 дні.
+  Результат: стабільна система без жодної із 24 проблем V2.
+</div>
+
+</body>
+</html>

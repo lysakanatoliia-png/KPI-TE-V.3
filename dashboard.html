@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>KPI Dashboard — Tiny Einstein</title>
+<link rel="stylesheet" href="assets/style.css"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<div class="page-wrap">
+
+  <!-- Шапка -->
+  <div class="page-header">
+    <div>
+      <h1>KPI Dashboard</h1>
+      <div class="sub">Tiny Einstein · dev.tinyeinstein.org</div>
+    </div>
+    <a href="form.html">+ Enter KPI →</a>
+  </div>
+
+  <!-- Банер повідомлень -->
+  <div id="banner" class="banner" hidden></div>
+
+  <!-- Фільтри -->
+  <div class="card">
+    <div class="card-title">Filters</div>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="from-input">From</label>
+        <input type="date" id="from-input"/>
+      </div>
+      <div class="form-group">
+        <label for="to-input">To</label>
+        <input type="date" id="to-input"/>
+      </div>
+      <div class="form-group">
+        <label for="room-filter">Room</label>
+        <select id="room-filter"></select>
+      </div>
+      <div class="form-group" style="justify-content:flex-end">
+        <label>&nbsp;</label>
+        <button id="btn-filter" class="btn btn-primary">Apply</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- KPI Summary таблиця -->
+  <div class="card">
+    <div class="card-title">KPI Summary</div>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Staff</th>
+          <th>Room</th>
+          <th>Team KPI%</th>
+          <th>Individual KPI%</th>
+          <th>Total KPI%</th>
+        </tr>
+      </thead>
+      <tbody id="summary-tbody">
+        <tr><td colspan="5" class="loading">Завантаження...</td></tr>
+      </tbody>
+    </table>
+    <div id="pagination" class="pagination"></div>
+  </div>
+
+  <!-- Топ порушень -->
+  <div class="card">
+    <div class="card-title">Top Violations</div>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Indicator</th>
+          <th>Category</th>
+          <th>Scope</th>
+          <th># Violations</th>
+        </tr>
+      </thead>
+      <tbody id="violations-tbody">
+        <tr><td colspan="4" class="loading">Завантаження...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Денний звіт -->
+  <div class="card">
+    <div class="card-title">Daily Report</div>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="daily-date">Date</label>
+        <input type="date" id="daily-date"/>
+      </div>
+      <div class="form-group">
+        <label for="daily-room">Room</label>
+        <select id="daily-room">
+          <option value="">-- Select Room --</option>
+        </select>
+      </div>
+      <div class="form-group" style="justify-content:flex-end">
+        <label>&nbsp;</label>
+        <button id="btn-daily" class="btn btn-outline">Load Daily</button>
+      </div>
+    </div>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Slot</th>
+          <th>Staff</th>
+          <th>Scope</th>
+          <th>Indicator</th>
+          <th>Check</th>
+          <th>Weight</th>
+          <th>Comment</th>
+        </tr>
+      </thead>
+      <tbody id="daily-tbody">
+        <tr><td colspan="7" class="empty">Select date and room</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<script src="assets/app.js"></script>
+<script src="assets/dashboard.js"></script>
+<script>
+// Заповнити daily-room коли конфіг завантажиться
+document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    const cfg = await apiFetch('/kpi/api/config.php');
+    const sel = document.getElementById('daily-room');
+    for (const r of cfg.rooms) {
+      const opt = document.createElement('option');
+      opt.value = r.room_code;
+      opt.textContent = r.room_name;
+      sel.appendChild(opt);
+    }
+  } catch (_) {}
+});
+</script>
+</body>
+</html>

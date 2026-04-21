@@ -1,0 +1,41 @@
+# KPI System V3 — .htaccess
+# Деплоювати разом з іншими файлами у /public_html/kpi/
+
+# ─────────────────────────────────────
+# HTTP Basic Auth — обов'язково (містить персональні дані стафу)
+# Перед деплоєм: вказати реальний шлях до .htpasswd
+# Генерація паролю: htpasswd -c /home/user/.htpasswd manager
+# ─────────────────────────────────────
+AuthType Basic
+AuthName "KPI System — Tiny Einstein"
+AuthUserFile /home/user/.htpasswd
+Require valid-user
+
+# ─────────────────────────────────────
+# Захист конфіг-файлу від прямого доступу
+# ─────────────────────────────────────
+<Files "config.env.php">
+  Require all denied
+</Files>
+
+# ─────────────────────────────────────
+# Заборона перегляду директорій
+# ─────────────────────────────────────
+Options -Indexes
+
+# ─────────────────────────────────────
+# Заблокувати міграційні скрипти після першого запуску
+# (розкоментувати після Фази 6)
+# ─────────────────────────────────────
+# <Directory "migrate">
+#   Require all denied
+# </Directory>
+
+# ─────────────────────────────────────
+# CORS — тільки свій домен
+# ─────────────────────────────────────
+<IfModule mod_headers.c>
+  Header set Access-Control-Allow-Origin "https://dev.tinyeinstein.org"
+  Header set Access-Control-Allow-Methods "GET, POST, OPTIONS"
+  Header set Access-Control-Allow-Headers "Content-Type"
+</IfModule>

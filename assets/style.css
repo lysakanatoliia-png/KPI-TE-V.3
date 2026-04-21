@@ -1,0 +1,309 @@
+/* KPI System V3 — Tiny Einstein */
+/* Загальні стилі для форми та дашборду */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --color-bg:       #f8fafc;
+  --color-surface:  #ffffff;
+  --color-border:   #e2e8f0;
+  --color-text:     #1e293b;
+  --color-muted:    #64748b;
+  --color-primary:  #3b82f6;
+  --color-success:  #22c55e;
+  --color-warning:  #f97316;
+  --color-danger:   #ef4444;
+  --radius:         10px;
+  --shadow:         0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.04);
+}
+
+body {
+  font-family: Inter, -apple-system, Arial, sans-serif;
+  background: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+/* ─────────────────────────────────────
+   Банер повідомлень
+───────────────────────────────────── */
+.banner {
+  padding: 12px 20px;
+  border-radius: var(--radius);
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0 0 16px;
+}
+.banner[hidden] { display: none; }
+.banner-error   { background: #fef2f2; color: #991b1b; border: 1px solid #fca5a5; }
+.banner-success { background: #f0fdf4; color: #14532d; border: 1px solid #86efac; }
+.banner-warning { background: #fff7ed; color: #7c2d12; border: 1px solid #fdba74; }
+.banner-info    { background: #eff6ff; color: #1e40af; border: 1px solid #93c5fd; }
+
+/* ─────────────────────────────────────
+   Контейнер сторінки
+───────────────────────────────────── */
+.page-wrap {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 32px 24px;
+}
+
+/* ─────────────────────────────────────
+   Шапка
+───────────────────────────────────── */
+.page-header {
+  background: #0f172a;
+  border-radius: 14px;
+  padding: 24px 28px;
+  margin-bottom: 28px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.page-header h1 {
+  font-size: 20px;
+  font-weight: 800;
+  color: #f8fafc;
+}
+.page-header .sub {
+  font-size: 12px;
+  color: #64748b;
+  margin-top: 2px;
+}
+.page-header a {
+  margin-left: auto;
+  color: #94a3b8;
+  text-decoration: none;
+  font-size: 13px;
+}
+.page-header a:hover { color: #f8fafc; }
+
+/* ─────────────────────────────────────
+   Картки / панелі
+───────────────────────────────────── */
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow);
+}
+.card-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-muted);
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  margin-bottom: 14px;
+}
+
+/* ─────────────────────────────────────
+   Форми
+───────────────────────────────────── */
+.form-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex: 1;
+  min-width: 160px;
+}
+label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-muted);
+  text-transform: uppercase;
+  letter-spacing: .4px;
+}
+select, input[type="date"], input[type="text"] {
+  padding: 9px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  font-size: 14px;
+  color: var(--color-text);
+  background: var(--color-surface);
+  width: 100%;
+  appearance: none;
+}
+select:focus, input:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 1px;
+}
+
+/* ─────────────────────────────────────
+   Кнопки
+───────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: opacity .15s;
+}
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.btn-primary  { background: var(--color-primary); color: #fff; }
+.btn-success  { background: var(--color-success); color: #fff; }
+.btn-outline  { background: transparent; border: 1.5px solid var(--color-border); color: var(--color-text); }
+.btn:hover:not(:disabled) { opacity: .85; }
+
+/* ─────────────────────────────────────
+   Чекбокси KPI (так/ні)
+───────────────────────────────────── */
+.kpi-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--color-border);
+}
+.kpi-item:last-child { border-bottom: none; }
+
+.kpi-check-wrap {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.check-btn {
+  padding: 5px 14px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1.5px solid var(--color-border);
+  background: #f8fafc;
+  color: var(--color-muted);
+}
+.check-btn.active-yes { background: #dcfce7; border-color: #86efac; color: #15803d; }
+.check-btn.active-no  { background: #fee2e2; border-color: #fca5a5; color: #dc2626; }
+
+.kpi-text { flex: 1; }
+.kpi-text .indicator { font-size: 14px; color: var(--color-text); }
+.kpi-text .category  { font-size: 11px; color: var(--color-muted); margin-top: 2px; }
+.kpi-text .weight    { font-size: 11px; color: var(--color-muted); }
+
+.comment-input {
+  margin-top: 6px;
+  width: 100%;
+  padding: 6px 10px;
+  font-size: 13px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+}
+.comment-input[hidden] { display: none; }
+
+/* ─────────────────────────────────────
+   Таблиці
+───────────────────────────────────── */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.data-table th {
+  background: #1e293b;
+  color: #e2e8f0;
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .4px;
+  font-weight: 700;
+}
+.data-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--color-border);
+  vertical-align: top;
+}
+.data-table tr:nth-child(even) td { background: #f8fafc; }
+.data-table tr:hover td { background: #eff6ff; }
+
+/* ─────────────────────────────────────
+   KPI % значення (колір)
+───────────────────────────────────── */
+.kpi-good { color: #15803d; font-weight: 700; }
+.kpi-warn { color: #c2410c; font-weight: 700; }
+.kpi-bad  { color: #dc2626; font-weight: 700; }
+
+/* ─────────────────────────────────────
+   Завантаження / порожній стан
+───────────────────────────────────── */
+.loading { color: var(--color-muted); padding: 20px; text-align: center; }
+.empty   { color: var(--color-muted); padding: 20px; text-align: center; font-style: italic; }
+
+/* ─────────────────────────────────────
+   Стаф — список з чекбоксами
+───────────────────────────────────── */
+.staff-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 8px 0;
+}
+.staff-chip {
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1.5px solid var(--color-border);
+  font-size: 13px;
+  cursor: pointer;
+  user-select: none;
+  background: #f8fafc;
+  color: var(--color-muted);
+}
+.staff-chip.selected {
+  background: #dbeafe;
+  border-color: #93c5fd;
+  color: #1e40af;
+  font-weight: 600;
+}
+
+/* ─────────────────────────────────────
+   Пагінація
+───────────────────────────────────── */
+.pagination {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 16px;
+  justify-content: center;
+  font-size: 13px;
+}
+.page-btn {
+  padding: 6px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  cursor: pointer;
+  background: var(--color-surface);
+}
+.page-btn.active { background: var(--color-primary); color: #fff; border-color: var(--color-primary); }
+.page-btn:disabled { opacity: .4; cursor: not-allowed; }
+
+/* ─────────────────────────────────────
+   Розділювач секцій
+───────────────────────────────────── */
+.section-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 24px 0 12px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--color-border);
+}
+
+@media (max-width: 600px) {
+  .page-wrap { padding: 16px 12px; }
+  .form-row  { flex-direction: column; }
+}

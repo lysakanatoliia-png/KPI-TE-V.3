@@ -1,0 +1,15 @@
+# Секретні дані — НЕ в git
+api/config.env.php
+.htpasswd
+
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Резервні копії
+cron/backups/
+*.sql.gz
+
+# PhpSpreadsheet (якщо встановлено через composer)
+vendor/
+composer.lock
